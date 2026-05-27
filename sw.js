@@ -1,8 +1,24 @@
-const CACHE = 'jlpt-v2';
-const FILES = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE = 'jlpt-v3';
+const CORE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+];
+const VOCAB = [
+  './vocab/vocab_n5.js',
+  './vocab/vocab_n4.js',
+  './vocab/vocab_n3.js',
+  './vocab/vocab_n2.js',
+  './vocab/vocab_n1.js',
+  './vocab/vocab_conv.js',
+];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll([...CORE, ...VOCAB]))
+  );
   self.skipWaiting();
 });
 
@@ -24,7 +40,7 @@ self.addEventListener('fetch', e => {
         const clone = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, clone));
         return res;
-      });
+      }).catch(() => cached);
     })
   );
 });
