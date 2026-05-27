@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="JLPT 단어">
+  <meta name="theme-color" content="#7F77DD">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>JLPT 단어 학습</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #ffffff;
+      --bg2: #f5f5f5;
+      --bg3: #efefef;
+      --text: #1a1a1a;
+      --text2: #555;
+      --text3: #999;
+      --border: rgba(0,0,0,0.12);
+      --border2: rgba(0,0,0,0.22);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --purple: #7F77DD;
+      --purple-dark: #534AB7;
+      --purple-bg: #EEEDFE;
+      --purple-text: #3C3489;
+      --teal-bg: #E1F5EE;
+      --teal-text: #085041;
+      --teal-border: #1D9E75;
+      --amber-bg: #FAEEDA;
+      --amber-text: #633806;
+      --coral-bg: #FAECE7;
+      --coral-border: #D85A30;
+      --coral-text: #993C1D;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1e;
+        --bg2: #2c2c2e;
+        --bg3: #3a3a3c;
+        --text: #f2f2f7;
+        --text2: #aeaeb2;
+        --text3: #636366;
+        --border: rgba(255,255,255,0.12);
+        --border2: rgba(255,255,255,0.22);
+        --purple-bg: #2e2b5a;
+        --purple-text: #b0abf0;
+        --teal-bg: #0f3028;
+        --teal-text: #5dcaa5;
+        --amber-bg: #3a2a0a;
+        --amber-text: #f0b955;
+        --coral-bg: #3a1a0a;
+        --coral-text: #f0886a;
+      }
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      overflow-x: hidden;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px;
+      padding-top: max(16px, env(safe-area-inset-top));
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    #header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+    #header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+    #btn-shuffle {
+      padding: 7px 13px;
+      font-size: 13px;
+      border: 0.5px solid var(--border2);
+      border-radius: 20px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text2);
+      min-height: 36px;
+    }
+    #btn-shuffle:active { background: var(--bg2); }
+
+    /* Level toggles */
+    #lv-row { display: flex; gap: 8px; }
+    .lv-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      background: transparent;
+      color: var(--text2);
+      min-height: 38px;
+      transition: all .15s;
+    }
+    .lv-btn.n1.on { background: var(--purple-bg); color: var(--purple-text); border-color: transparent; }
+    .lv-btn.n2.on { background: var(--teal-bg); color: var(--teal-text); border-color: transparent; }
+    .lv-btn.n3.on { background: var(--amber-bg); color: var(--amber-text); border-color: transparent; }
+
+    /* Progress */
+    #prog-row { display: flex; align-items: center; gap: 10px; }
+    #prog-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--bg3); overflow: hidden; }
+    #prog-fill { height: 100%; border-radius: 3px; background: var(--purple); transition: width .35s; }
+    #prog-text { font-size: 12px; color: var(--text3); min-width: 52px; text-align: right; }
+
+    /* Flashcard */
+    #card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 210px;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #card:active { background: var(--bg2); }
+    .lv-badge {
+      font-size: 11px;
+      padding: 3px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    #word {
+      font-size: 52px;
+      letter-spacing: 4px;
+      color: var(--text);
+      text-align: center;
+      line-height: 1.2;
+    }
+    #reading {
+      font-size: 22px;
+      color: var(--purple);
+      margin-top: 12px;
+      text-align: center;
+      display: none;
+    }
+    #meaning {
+      font-size: 17px;
+      color: var(--text2);
+      margin-top: 6px;
+      text-align: center;
+      display: none;
+    }
+    #wtype {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 4px;
+      display: none;
+    }
+    #card-hint {
+      font-size: 12px;
+      color: var(--text3);
+      position: absolute;
+      bottom: 12px;
+    }
+
+    /* Reveal button */
+    #reveal-btn {
+      width: 100%;
+      padding: 15px;
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: var(--radius);
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      min-height: 54px;
+      letter-spacing: .3px;
+    }
+    #reveal-btn:active { background: var(--purple-dark); }
+
+    /* Kana panel */
+    #kana-panel {
+      display: none;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+    #kana-panel.open { display: block; }
+    #kana-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+    .ktab {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text2);
+      min-height: 36px;
+    }
+    .ktab.on { background: var(--purple-bg); color: var(--purple-text); border-color: transparent; }
+    .kana-group { margin-bottom: 8px; }
+    .kana-label { font-size: 10px; color: var(--text3); margin-bottom: 3px; font-weight: 600; letter-spacing: .5px; }
+    .kana-row { display: flex; gap: 3px; overflow-x: auto; padding-bottom: 2px; }
+    .kana-row::-webkit-scrollbar { display: none; }
+    .kc {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      min-width: 46px;
+      padding: 5px 2px;
+      border-radius: 6px;
+      border: 0.5px solid var(--border);
+      background: var(--bg2);
+    }
+    .kc .ch { font-size: 16px; color: var(--text); line-height: 1.2; }
+    .kc .rm { font-size: 9px; color: var(--text3); margin-top: 2px; }
+    .kc.empty { border: none; background: transparent; }
+
+    /* Know / Don't know */
+    #action-row { display: none; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #btn-know {
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: 1.5px solid var(--teal-border);
+      color: var(--teal-text);
+      background: transparent;
+      min-height: 52px;
+    }
+    #btn-know:active { background: var(--teal-bg); }
+    #btn-dontknow {
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: 1.5px solid var(--coral-border);
+      color: var(--coral-text);
+      background: transparent;
+      min-height: 52px;
+    }
+    #btn-dontknow:active { background: var(--coral-bg); }
+
+    /* Nav */
+    #nav-row { display: flex; gap: 8px; }
+    #btn-prev, #btn-next {
+      flex: 1;
+      padding: 12px;
+      font-size: 14px;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      background: transparent;
+      color: var(--text2);
+      min-height: 46px;
+    }
+    #btn-prev:active, #btn-next:active { background: var(--bg2); }
+
+    /* Stats */
+    #stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .scard { background: var(--bg2); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+    .slabel { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
+    .sval { font-size: 24px; font-weight: 600; }
+
+    /* Done */
+    #done-wrap { text-align: center; padding: 20px 16px; }
+    #done-wrap .big { font-size: 36px; margin-bottom: 10px; }
+    #done-wrap .sub { font-size: 15px; color: var(--text2); margin-bottom: 16px; }
+    #done-restart {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border2);
+      background: transparent;
+      cursor: pointer;
+      color: var(--text);
+    }
+    #done-restart:active { background: var(--bg2); }
+
+    /* Install banner */
+    #install-banner {
+      display: none;
+      background: var(--purple-bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--purple-text);
+      align-items: center;
+      gap: 10px;
+    }
+    #install-banner.show { display: flex; }
+    #install-btn {
+      margin-left: auto;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #close-banner {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--purple-text);
+      padding: 0 2px;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div id="install-banner">
+    <span>홈 화면에 앱으로 추가하세요</span>
+    <button id="install-btn" onclick="installApp()">추가</button>
+    <button id="close-banner" onclick="document.getElementById('install-banner').classList.remove('show')">×</button>
+  </div>
+
+  <div id="header">
+    <h1>JLPT 단어 학습</h1>
+    <button id="btn-shuffle" onclick="doShuffle()">셔플 ↺</button>
+  </div>
+
+  <div id="lv-row">
+    <button class="lv-btn n1 on" onclick="toggleLv('N1',this)">N1</button>
+    <button class="lv-btn n2 on" onclick="toggleLv('N2',this)">N2</button>
+    <button class="lv-btn n3 on" onclick="toggleLv('N3',this)">N3</button>
+  </div>
+
+  <div id="prog-row">
+    <div id="prog-bar"><div id="prog-fill" style="width:0%"></div></div>
+    <div id="prog-text">0 / 0</div>
+  </div>
+
+  <div id="card" onclick="onCardTap()">
+    <div id="word-area" style="display:flex;flex-direction:column;align-items:center">
+      <div id="lv-badge" class="lv-badge"></div>
+      <div id="word"></div>
+      <div id="reading"></div>
+      <div id="meaning"></div>
+      <div id="wtype"></div>
+    </div>
+    <div id="card-hint">탭하면 정답 확인</div>
+  </div>
+
+  <div id="reveal-wrap">
+    <button id="reveal-btn" onclick="reveal()">정답 확인</button>
+  </div>
+
+  <div id="kana-panel">
+    <div id="kana-tabs">
+      <button class="ktab on" onclick="showKana('hira',this)">ひらがな</button>
+      <button class="ktab" onclick="showKana('kata',this)">カタカナ</button>
+    </div>
+    <div id="kana-content"></div>
+  </div>
+
+  <div id="action-row">
+    <button id="btn-know" onclick="mark(true)">✓ 알아요</button>
+    <button id="btn-dontknow" onclick="mark(false)">✗ 몰라요</button>
+  </div>
+
+  <div id="nav-row">
+    <button id="btn-prev" onclick="go(-1)">← 이전</button>
+    <button id="btn-next" onclick="go(1)">다음 →</button>
+  </div>
+
+  <div id="stats-row">
+    <div class="scard">
+      <div class="slabel">알아요</div>
+      <div class="sval" id="sv-know" style="color:#1D9E75">0</div>
+    </div>
+    <div class="scard">
+      <div class="slabel">몰라요</div>
+      <div class="sval" id="sv-dont" style="color:#D85A30">0</div>
+    </div>
+    <div class="scard">
+      <div class="slabel">남은 단어</div>
+      <div class="sval" id="sv-left">0</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── 가나 데이터 ──
+const HIRA=[
+  {t:"기본 모음",c:[["あ","a"],["い","i"],["う","u"],["え","e"],["お","o"]]},
+  {t:"か행",c:[["か","ka"],["き","ki"],["く","ku"],["け","ke"],["こ","ko"]]},
+  {t:"さ행",c:[["さ","sa"],["し","shi"],["す","su"],["せ","se"],["そ","so"]]},
+  {t:"た행",c:[["た","ta"],["ち","chi"],["つ","tsu"],["て","te"],["と","to"]]},
+  {t:"な행",c:[["な","na"],["に","ni"],["ぬ","nu"],["ね","ne"],["の","no"]]},
+  {t:"は행",c:[["は","ha"],["ひ","hi"],["ふ","fu"],["へ","he"],["ほ","ho"]]},
+  {t:"ま행",c:[["ま","ma"],["み","mi"],["む","mu"],["め","me"],["も","mo"]]},
+  {t:"や·ら·わ",c:[["や","ya"],["ゆ","yu"],["よ","yo"],["ら","ra"],["り","ri"]]},
+  {t:"",c:[["る","ru"],["れ","re"],["ろ","ro"],["わ","wa"],["を","wo"]]},
+  {t:"ん·탁음",c:[["ん","n"],["が","ga"],["ぎ","gi"],["ぐ","gu"],["げ","ge"]]},
+  {t:"",c:[["ご","go"],["ざ","za"],["じ","ji"],["ず","zu"],["ぜ","ze"]]},
+  {t:"",c:[["ぞ","zo"],["だ","da"],["で","de"],["ど","do"],["ば","ba"]]},
+  {t:"",c:[["び","bi"],["ぶ","bu"],["べ","be"],["ぼ","bo"],["",""]]},
+  {t:"반탁음",c:[["ぱ","pa"],["ぴ","pi"],["ぷ","pu"],["ぺ","pe"],["ぽ","po"]]},
+];
+const KATA=[
+  {t:"기본 모음",c:[["ア","a"],["イ","i"],["ウ","u"],["エ","e"],["オ","o"]]},
+  {t:"カ행",c:[["カ","ka"],["キ","ki"],["ク","ku"],["ケ","ke"],["コ","ko"]]},
+  {t:"サ행",c:[["サ","sa"],["シ","shi"],["ス","su"],["セ","se"],["ソ","so"]]},
+  {t:"タ행",c:[["タ","ta"],["チ","chi"],["ツ","tsu"],["テ","te"],["ト","to"]]},
+  {t:"ナ행",c:[["ナ","na"],["ニ","ni"],["ヌ","nu"],["ネ","ne"],["ノ","no"]]},
+  {t:"ハ행",c:[["ハ","ha"],["ヒ","hi"],["フ","fu"],["ヘ","he"],["ホ","ho"]]},
+  {t:"マ행",c:[["マ","ma"],["ミ","mi"],["ム","mu"],["メ","me"],["モ","mo"]]},
+  {t:"ヤ·ラ·ワ",c:[["ヤ","ya"],["ユ","yu"],["ヨ","yo"],["ラ","ra"],["リ","ri"]]},
+  {t:"",c:[["ル","ru"],["レ","re"],["ロ","ro"],["ワ","wa"],["ヲ","wo"]]},
+  {t:"ン·탁음",c:[["ン","n"],["ガ","ga"],["ギ","gi"],["グ","gu"],["ゲ","ge"]]},
+  {t:"",c:[["ゴ","go"],["ザ","za"],["ジ","ji"],["ズ","zu"],["ゼ","ze"]]},
+  {t:"",c:[["ゾ","zo"],["ダ","da"],["デ","de"],["ド","do"],["バ","ba"]]},
+  {t:"",c:[["ビ","bi"],["ブ","bu"],["ベ","be"],["ボ","bo"],["",""]]},
+  {t:"반탁음",c:[["パ","pa"],["ピ","pi"],["プ","pu"],["ペ","pe"],["ポ","po"]]},
+];
+
+// ── 단어 데이터 ──
+const vocab=[
+  {w:"語彙",r:"ごい",m:"어휘",t:"명사",lv:"N1"},{w:"曖昧",r:"あいまい",m:"애매함",t:"나형용사",lv:"N1"},
+  {w:"把握",r:"はあく",m:"파악",t:"명사",lv:"N1"},{w:"概念",r:"がいねん",m:"개념",t:"명사",lv:"N1"},
+  {w:"妥協",r:"だきょう",m:"타협",t:"명사",lv:"N1"},{w:"矛盾",r:"むじゅん",m:"모순",t:"명사",lv:"N1"},
+  {w:"抽象",r:"ちゅうしょう",m:"추상",t:"명사",lv:"N1"},{w:"論理",r:"ろんり",m:"논리",t:"명사",lv:"N1"},
+  {w:"効率",r:"こうりつ",m:"효율",t:"명사",lv:"N1"},{w:"影響",r:"えいきょう",m:"영향",t:"명사",lv:"N1"},
+  {w:"貢献",r:"こうけん",m:"공헌",t:"명사",lv:"N1"},{w:"批判",r:"ひはん",m:"비판",t:"명사",lv:"N1"},
+  {w:"維持",r:"いじ",m:"유지",t:"명사",lv:"N1"},{w:"促進",r:"そくしん",m:"촉진",t:"명사",lv:"N1"},
+  {w:"統計",r:"とうけい",m:"통계",t:"명사",lv:"N1"},{w:"傾向",r:"けいこう",m:"경향",t:"명사",lv:"N1"},
+  {w:"技術",r:"ぎじゅつ",m:"기술",t:"명사",lv:"N2"},{w:"経験",r:"けいけん",m:"경험",t:"명사",lv:"N2"},
+  {w:"文化",r:"ぶんか",m:"문화",t:"명사",lv:"N2"},{w:"政治",r:"せいじ",m:"정치",t:"명사",lv:"N2"},
+  {w:"経済",r:"けいざい",m:"경제",t:"명사",lv:"N2"},{w:"環境",r:"かんきょう",m:"환경",t:"명사",lv:"N2"},
+  {w:"成功",r:"せいこう",m:"성공",t:"명사",lv:"N2"},{w:"失敗",r:"しっぱい",m:"실패",t:"명사",lv:"N2"},
+  {w:"準備",r:"じゅんび",m:"준비",t:"명사",lv:"N2"},{w:"確認",r:"かくにん",m:"확인",t:"명사",lv:"N2"},
+  {w:"連絡",r:"れんらく",m:"연락",t:"명사",lv:"N2"},{w:"説明",r:"せつめい",m:"설명",t:"명사",lv:"N2"},
+  {w:"関係",r:"かんけい",m:"관계",t:"명사",lv:"N2"},{w:"問題",r:"もんだい",m:"문제",t:"명사",lv:"N2"},
+  {w:"研究",r:"けんきゅう",m:"연구",t:"명사",lv:"N2"},{w:"発展",r:"はってん",m:"발전",t:"명사",lv:"N2"},
+  {w:"時間",r:"じかん",m:"시간",t:"명사",lv:"N3"},{w:"仕事",r:"しごと",m:"일",t:"명사",lv:"N3"},
+  {w:"場所",r:"ばしょ",m:"장소",t:"명사",lv:"N3"},{w:"気持ち",r:"きもち",m:"기분",t:"명사",lv:"N3"},
+  {w:"生活",r:"せいかつ",m:"생활",t:"명사",lv:"N3"},{w:"食事",r:"しょくじ",m:"식사",t:"명사",lv:"N3"},
+  {w:"旅行",r:"りょこう",m:"여행",t:"명사",lv:"N3"},{w:"電話",r:"でんわ",m:"전화",t:"명사",lv:"N3"},
+  {w:"大切",r:"たいせつ",m:"소중함",t:"나형용사",lv:"N3"},{w:"便利",r:"べんり",m:"편리함",t:"나형용사",lv:"N3"},
+  {w:"大丈夫",r:"だいじょうぶ",m:"괜찮음",t:"나형용사",lv:"N3"},{w:"自由",r:"じゆう",m:"자유",t:"나형용사",lv:"N3"},
+  {w:"急ぐ",r:"いそぐ",m:"서두르다",t:"동사",lv:"N3"},{w:"続ける",r:"つづける",m:"계속하다",t:"동사",lv:"N3"},
+  {w:"決める",r:"きめる",m:"결정하다",t:"동사",lv:"N3"},{w:"集める",r:"あつめる",m:"모으다",t:"동사",lv:"N3"},
+];
+
+// ── 상태 ──
+let activeLv=new Set(['N1','N2','N3']);
+let queue=[],idx=0,isRevealed=false,kn=0,dn=0,kanaMode='hira';
+let deferredPrompt=null;
+
+// ── PWA 설치 ──
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+function installApp(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{
+    deferredPrompt=null;
+    document.getElementById('install-banner').classList.remove('show');
+  });
+}
+window.addEventListener('appinstalled', ()=>{
+  document.getElementById('install-banner').classList.remove('show');
+});
+
+// ── 서비스워커 등록 ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// ── 가나표 ──
+function buildKana(rows){
+  return rows.map(row=>`
+    <div class="kana-group">
+      ${row.t ? `<div class="kana-label">${row.t}</div>` : ''}
+      <div class="kana-row">
+        ${row.c.map(([ch,rm])=> ch&&ch.trim()
+          ? `<div class="kc"><span class="ch">${ch}</span><span class="rm">${rm}</span></div>`
+          : `<div class="kc empty"></div>`
+        ).join('')}
+      </div>
+    </div>`).join('');
+}
+function showKana(mode, btn){
+  kanaMode = mode;
+  document.querySelectorAll('.ktab').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  else document.querySelectorAll('.ktab')[mode==='hira'?0:1].classList.add('on');
+  document.getElementById('kana-content').innerHTML = buildKana(mode==='hira'?HIRA:KATA);
+}
+
+// ── 레벨 색상 ──
+const lvStyle={
+  N1:{bg:'#EEEDFE',c:'#3C3489'},
+  N2:{bg:'#E1F5EE',c:'#085041'},
+  N3:{bg:'#FAEEDA',c:'#633806'},
+};
+
+// ── 카드 렌더 ──
+function renderCard(){
+  const total=queue.length;
+  const left=Math.max(0,total-idx);
+  document.getElementById('prog-text').textContent=`${Math.min(idx+1,total)} / ${total}`;
+  document.getElementById('prog-fill').style.width=total?Math.round((idx/total)*100)+'%':'0%';
+  document.getElementById('sv-left').textContent=left;
+  document.getElementById('kana-panel').classList.remove('open');
+  document.getElementById('action-row').style.display='none';
+
+  if(idx>=total){
+    document.getElementById('card').innerHTML=`
+      <div id="done-wrap">
+        <div class="big">완료! 🎉</div>
+        <div class="sub">알아요 ${kn}개 · 몰라요 ${dn}개</div>
+        <button id="done-restart" onclick="doShuffle()">다시 시작</button>
+      </div>`;
+    document.getElementById('reveal-wrap').style.display='none';
+    document.getElementById('nav-row').style.display='none';
+    return;
+  }
+
+  document.getElementById('reveal-wrap').style.display='block';
+  document.getElementById('nav-row').style.display='flex';
+
+  const w=queue[idx];
+  const s=lvStyle[w.lv];
+  document.getElementById('card').innerHTML=`
+    <div id="word-area" style="display:flex;flex-direction:column;align-items:center">
+      <div class="lv-badge" style="background:${s.bg};color:${s.c}">${w.lv}</div>
+      <div id="word" style="font-size:52px;letter-spacing:4px;color:var(--text);text-align:center;line-height:1.2">${w.w}</div>
+      <div id="reading" style="font-size:22px;color:var(--purple);margin-top:12px;text-align:center;display:none">${w.r}</div>
+      <div id="meaning" style="font-size:17px;color:var(--text2);margin-top:6px;text-align:center;display:none">${w.m}</div>
+      <div id="wtype" style="font-size:12px;color:var(--text3);margin-top:4px;display:none">[${w.t}]</div>
+    </div>
+    <div id="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px">탭하면 정답 확인</div>`;
+  isRevealed=false;
+}
+
+function reveal(){
+  if(idx>=queue.length||isRevealed) return;
+  isRevealed=true;
+  ['reading','meaning','wtype'].forEach(id=>{
+    const e=document.getElementById(id);
+    if(e) e.style.display='block';
+  });
+  const hint=document.getElementById('card-hint');
+  if(hint) hint.style.display='none';
+  document.getElementById('reveal-btn').style.display='none';
+  document.getElementById('kana-panel').classList.add('open');
+  showKana(kanaMode,null);
+  document.getElementById('action-row').style.display='grid';
+}
+
+function onCardTap(){ if(!isRevealed) reveal(); }
+
+function go(d){
+  if(d>0) idx=Math.min(idx+1,queue.length);
+  else idx=Math.max(idx-1,0);
+  document.getElementById('reveal-btn').style.display='block';
+  renderCard();
+}
+
+function mark(know){
+  if(!isRevealed) return;
+  if(know) kn++; else dn++;
+  document.getElementById('sv-know').textContent=kn;
+  document.getElementById('sv-dont').textContent=dn;
+  go(1);
+}
+
+function doShuffle(){
+  queue=vocab.filter(v=>activeLv.has(v.lv)).sort(()=>Math.random()-.5);
+  idx=0; kn=0; dn=0;
+  document.getElementById('sv-know').textContent='0';
+  document.getElementById('sv-dont').textContent='0';
+  document.getElementById('reveal-btn').style.display='block';
+  renderCard();
+}
+
+function toggleLv(lv,btn){
+  if(activeLv.has(lv)){ if(activeLv.size>1) activeLv.delete(lv); }
+  else activeLv.add(lv);
+  btn.classList.toggle('on', activeLv.has(lv));
+  doShuffle();
+}
+
+// ── 초기화 ──
+showKana('hira',null);
+doShuffle();
+</script>
+</body>
+</html>
