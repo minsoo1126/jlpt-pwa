@@ -35,8 +35,9 @@
       --kana-pad:    clamp(3px,  0.5vw,  7px);
       --kana-label:  clamp(8px,  0.7vw,  11px);
     }
+    /* System dark mode (only when no forced theme) */
     @media(prefers-color-scheme:dark){
-      :root{
+      html:not([data-theme="light"]){
         --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
         --text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;
         --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
@@ -47,6 +48,18 @@
         --coral-bg:#3a1a0a;--coral-c:#f0886a;
         --hl-bg:#2e2b5a;--hl-border:#7F77DD;--hl-ch:#b0abf0;--hl-rm:#7F77DD;
       }
+    }
+    /* Force dark */
+    html[data-theme="dark"]{
+      --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+        --text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;
+        --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
+        --n1-bg:#2e2b5a;--n1-c:#b0abf0;
+        --n2-bg:#0f3028;--n2-c:#5dcaa5;
+        --n3-bg:#3a2a0a;--n3-c:#f0b955;
+        --kw-bg:#3a1a2a;--kw-c:#ed93b1;
+        --coral-bg:#3a1a0a;--coral-c:#f0886a;
+        --hl-bg:#2e2b5a;--hl-border:#7F77DD;--hl-ch:#b0abf0;--hl-rm:#7F77DD;
     }
 
     html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif}
@@ -216,6 +229,55 @@
       #m-stats .stat-val{font-size:18px}
       #m-stats .stat-label{font-size:10px}
     }
+
+    /* ── N4 / N5 level colours ── */
+    .lv-btn.n4.on{background:#E8F4FD;color:#1A5276;border-color:transparent}
+    .lv-btn.n5.on{background:#E9F7EF;color:#1E8449;border-color:transparent}
+
+    /* ── Theme toggle ── */
+    .theme-btn{padding:5px 10px;font-size:12px;border:0.5px solid var(--border2);border-radius:20px;cursor:pointer;background:transparent;color:var(--text2)}
+    .theme-btn.on{background:var(--n1-bg);color:var(--n1-c);border-color:transparent}
+
+    /* ── Search bar ── */
+    .search-wrap{position:relative;display:flex;align-items:center}
+    .search-wrap input{
+      padding:5px 28px 5px 10px;font-size:12px;
+      border:0.5px solid var(--border2);border-radius:20px;
+      background:var(--bg2);color:var(--text);outline:none;
+      width:clamp(100px,14vw,200px);
+    }
+    .search-wrap input::placeholder{color:var(--text3)}
+    .search-wrap input:focus{border-color:var(--purple)}
+    .search-clear{position:absolute;right:8px;font-size:14px;cursor:pointer;color:var(--text3);display:none}
+    .search-clear.show{display:block}
+
+    /* ── Review mode banner ── */
+    .review-banner{
+      display:none;padding:7px 12px;border-radius:var(--r-sm);
+      background:#FFF3CD;color:#856404;font-size:12px;font-weight:500;
+      border:0.5px solid #FFD95A;align-items:center;gap:8px;
+    }
+    .review-banner.show{display:flex}
+    .review-exit{margin-left:auto;padding:4px 10px;font-size:11px;border:0.5px solid #856404;border-radius:20px;cursor:pointer;background:transparent;color:#856404}
+    @media(prefers-color-scheme:dark){
+      .review-banner{background:#3a2e00;color:#f0c040;border-color:#6a5200}
+      .review-exit{border-color:#f0c040;color:#f0c040}
+    }
+    html[data-theme="dark"] .review-banner{background:#3a2e00;color:#f0c040;border-color:#6a5200}
+    html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
+
+    /* ── TTS button on card ── */
+    .tts-btn{
+      position:absolute;bottom:12px;right:14px;
+      font-size:18px;background:none;border:none;cursor:pointer;
+      opacity:0.25;pointer-events:none;transition:opacity .2s;
+      padding:4px;border-radius:50%;
+    }
+    .tts-btn.active{opacity:1;pointer-events:auto}
+    .tts-btn.active:hover{background:var(--bg3)}
+
+    /* ── Timer in stat card ── */
+    .timer-val{font-size:15px;font-weight:600;color:var(--purple);font-variant-numeric:tabular-nums;letter-spacing:1px}
   </style>
 </head>
 <body>
@@ -231,13 +293,30 @@
     </div>
   </div>
   <div id="d-right">
+    <div id="d-review-banner" class="review-banner">
+      <span id="d-review-txt">📝 오답 복습 모드</span>
+      <button class="review-exit" onclick="exitReviewMode()">✕ 복습 종료</button>
+    </div>
     <div id="d-topbar">
       <span class="lv-label">레벨</span>
       <button class="lv-btn n1 on" onclick="toggleLv('N1',this)">N1</button>
       <button class="lv-btn n2 on" onclick="toggleLv('N2',this)">N2</button>
       <button class="lv-btn n3 on" onclick="toggleLv('N3',this)">N3</button>
+      <button class="lv-btn n4 on" onclick="toggleLv('N4',this)">N4</button>
+      <button class="lv-btn n5 on" onclick="toggleLv('N5',this)">N5</button>
       <button class="lv-btn kw on" onclick="toggleLv('회화',this)">회화</button>
-      <button class="shuffle-btn" id="d-shuffle" onclick="doShuffle()" style="margin-left:auto;padding:6px 13px;font-size:12px">셔플 ↺</button>
+      <button class="shuffle-btn" id="d-shuffle" onclick="doShuffle()" style="margin-left:auto;padding:6px 10px;font-size:12px">셔플 ↺</button>
+      <button class="shuffle-btn" onclick="enterReviewMode()" style="padding:6px 10px;font-size:12px;border-color:var(--coral-b);color:var(--coral-c)">오답복습</button>
+    </div>
+    <div id="d-search-row" style="display:flex;align-items:center;gap:8px">
+      <div class="search-wrap">
+        <input id="d-search" type="text" placeholder="🔍 단어/읽기/뜻 검색..." oninput="handleSearch(this.value,'d')">
+        <span class="search-clear" id="d-search-clear" onclick="clearSearch('d')">✕</span>
+      </div>
+      <span style="margin-left:auto;font-size:11px;color:var(--text3)">테마</span>
+      <button class="theme-btn on" id="th-sys" onclick="setTheme('system',this)">💻 시스템</button>
+      <button class="theme-btn" id="th-light" onclick="setTheme('light',this)">☀️ 라이트</button>
+      <button class="theme-btn" id="th-dark" onclick="setTheme('dark',this)">🌙 다크</button>
     </div>
     <div id="d-prog-row">
       <div class="prog-bar"><div class="prog-fill" id="d-prog-fill" style="width:0%"></div></div>
@@ -251,22 +330,39 @@
       <button class="dont-btn" id="d-dont" onclick="mark(false)" style="display:none">✗ 몰라요</button>
       <button class="nav-btn" id="d-next" style="margin-left:auto" onclick="go(1)">다음 →</button>
     </div>
-    <div id="d-stats">
+    <div id="d-stats" style="grid-template-columns:repeat(5,1fr)">
       <div class="stat-card"><div class="stat-label">알아요</div><div class="stat-val" id="d-sv-know" style="color:#1D9E75">0</div></div>
       <div class="stat-card"><div class="stat-label">몰라요</div><div class="stat-val" id="d-sv-dont" style="color:#D85A30">0</div></div>
       <div class="stat-card"><div class="stat-label">남은 단어</div><div class="stat-val" id="d-sv-left">0</div></div>
       <div class="stat-card"><div class="stat-label">전체</div><div class="stat-val" id="d-sv-total" style="color:var(--text3)">0</div></div>
+      <div class="stat-card"><div class="stat-label">순공시간</div><div class="timer-val" id="d-sv-timer">00:00:00</div></div>
     </div>
   </div>
 </div>
 
 <div id="mobile-layout">
-  <div id="m-topbar">
-    <button class="lv-btn n1 on" onclick="toggleLv('N1',this)">N1</button>
-    <button class="lv-btn n2 on" onclick="toggleLv('N2',this)">N2</button>
-    <button class="lv-btn n3 on" onclick="toggleLv('N3',this)">N3</button>
-    <button class="lv-btn kw on" onclick="toggleLv('회화',this)">회화</button>
-    <button class="shuffle-btn" onclick="doShuffle()" style="margin-left:auto;padding:7px 13px;font-size:12px;min-height:34px">셔플 ↺</button>
+  <div id="m-review-banner" class="review-banner">
+    <span id="m-review-txt">📝 오답 복습 모드</span>
+    <button class="review-exit" onclick="exitReviewMode()">✕ 복습 종료</button>
+  </div>
+  <div id="m-topbar" style="gap:4px">
+    <button class="lv-btn n1 on" onclick="toggleLv('N1',this)" style="padding:5px 8px;font-size:11px">N1</button>
+    <button class="lv-btn n2 on" onclick="toggleLv('N2',this)" style="padding:5px 8px;font-size:11px">N2</button>
+    <button class="lv-btn n3 on" onclick="toggleLv('N3',this)" style="padding:5px 8px;font-size:11px">N3</button>
+    <button class="lv-btn n4 on" onclick="toggleLv('N4',this)" style="padding:5px 8px;font-size:11px">N4</button>
+    <button class="lv-btn n5 on" onclick="toggleLv('N5',this)" style="padding:5px 8px;font-size:11px">N5</button>
+    <button class="lv-btn kw on" onclick="toggleLv('회화',this)" style="padding:5px 8px;font-size:11px">회화</button>
+    <button class="shuffle-btn" onclick="doShuffle()" style="margin-left:auto;padding:6px 10px;font-size:12px;min-height:32px">↺</button>
+    <button class="shuffle-btn" onclick="enterReviewMode()" style="padding:6px 8px;font-size:11px;min-height:32px;border-color:var(--coral-b);color:var(--coral-c)">오답복습</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <div class="search-wrap" style="flex:1">
+      <input id="m-search" type="text" placeholder="🔍 검색..." oninput="handleSearch(this.value,'m')" style="width:100%">
+      <span class="search-clear" id="m-search-clear" onclick="clearSearch('m')">✕</span>
+    </div>
+    <button class="theme-btn" id="m-th-sys" onclick="setTheme('system',this)">💻</button>
+    <button class="theme-btn" id="m-th-light" onclick="setTheme('light',this)">☀️</button>
+    <button class="theme-btn" id="m-th-dark" onclick="setTheme('dark',this)">🌙</button>
   </div>
   <div id="m-prog-row">
     <div class="prog-bar"><div class="prog-fill" id="m-prog-fill" style="width:0%"></div></div>
@@ -290,11 +386,12 @@
     <button class="nav-btn" id="m-shuffle" onclick="doShuffle()">셔플 ↺</button>
     <button class="nav-btn" id="m-next" onclick="go(1)">다음 →</button>
   </div>
-  <div id="m-stats">
+  <div id="m-stats" style="grid-template-columns:repeat(5,1fr)">
     <div class="stat-card"><div class="stat-label">알아요</div><div class="stat-val" id="m-sv-know" style="color:#1D9E75">0</div></div>
     <div class="stat-card"><div class="stat-label">몰라요</div><div class="stat-val" id="m-sv-dont" style="color:#D85A30">0</div></div>
-    <div class="stat-card"><div class="stat-label">남은 단어</div><div class="stat-val" id="m-sv-left">0</div></div>
+    <div class="stat-card"><div class="stat-label">남은</div><div class="stat-val" id="m-sv-left">0</div></div>
     <div class="stat-card"><div class="stat-label">전체</div><div class="stat-val" id="m-sv-total" style="color:var(--text3)">0</div></div>
+    <div class="stat-card"><div class="stat-label">순공시간</div><div class="timer-val" id="m-sv-timer" style="font-size:11px">00:00:00</div></div>
   </div>
 </div>
 
@@ -848,30 +945,141 @@ const vocab=[
 {w:"ネット",r:"ねっと",m:"인터넷",t:"명사",lv:"회화"},
 {w:"アプリ",r:"あぷり",m:"앱",t:"명사",lv:"회화"},
 {w:"パソコン",r:"ぱそこん",m:"PC",t:"명사",lv:"회화"}
+,
+{w:"電気",r:"でんき",m:"전기",t:"명사",lv:"N4"},
+{w:"机",r:"つくえ",m:"책상",t:"명사",lv:"N4"},
+{w:"窓",r:"まど",m:"창문",t:"명사",lv:"N4"},
+{w:"橋",r:"はし",m:"다리(橋)",t:"명사",lv:"N4"},
+{w:"道",r:"みち",m:"길",t:"명사",lv:"N4"},
+{w:"公園",r:"こうえん",m:"공원",t:"명사",lv:"N4"},
+{w:"図書館",r:"としょかん",m:"도서관",t:"명사",lv:"N4"},
+{w:"銀行",r:"ぎんこう",m:"은행",t:"명사",lv:"N4"},
+{w:"郵便局",r:"ゆうびんきょく",m:"우체국",t:"명사",lv:"N4"},
+{w:"工場",r:"こうじょう",m:"공장",t:"명사",lv:"N4"},
+{w:"建物",r:"たてもの",m:"건물",t:"명사",lv:"N4"},
+{w:"空港",r:"くうこう",m:"공항",t:"명사",lv:"N4"},
+{w:"市役所",r:"しやくしょ",m:"시청",t:"명사",lv:"N4"},
+{w:"洗う",r:"あらう",m:"씻다",t:"동사",lv:"N4"},
+{w:"直す",r:"なおす",m:"고치다",t:"동사",lv:"N4"},
+{w:"壊す",r:"こわす",m:"부수다",t:"동사",lv:"N4"},
+{w:"引く",r:"ひく",m:"당기다",t:"동사",lv:"N4"},
+{w:"押す",r:"おす",m:"밀다",t:"동사",lv:"N4"},
+{w:"正しい",r:"ただしい",m:"올바른",t:"い형용사",lv:"N4"},
+{w:"広い",r:"ひろい",m:"넓은",t:"い형용사",lv:"N4"},
+{w:"狭い",r:"せまい",m:"좁은",t:"い형용사",lv:"N4"},
+{w:"厚い",r:"あつい",m:"두꺼운",t:"い형용사",lv:"N4"},
+{w:"薄い",r:"うすい",m:"얇은",t:"い형용사",lv:"N4"},
+{w:"重い",r:"おもい",m:"무거운",t:"い형용사",lv:"N4"},
+{w:"軽い",r:"かるい",m:"가벼운",t:"い형용사",lv:"N4"},
+{w:"丸い",r:"まるい",m:"둥근",t:"い형용사",lv:"N4"},
+{w:"細い",r:"ほそい",m:"가는/얇은",t:"い형용사",lv:"N4"},
+{w:"太い",r:"ふとい",m:"굵은",t:"い형용사",lv:"N4"},
+{w:"辞書",r:"じしょ",m:"사전",t:"명사",lv:"N4"},
+{w:"文法",r:"ぶんぽう",m:"문법",t:"명사",lv:"N4"},
+{w:"右",r:"みぎ",m:"오른쪽",t:"명사",lv:"N5"},
+{w:"左",r:"ひだり",m:"왼쪽",t:"명사",lv:"N5"},
+{w:"上",r:"うえ",m:"위",t:"명사",lv:"N5"},
+{w:"下",r:"した",m:"아래",t:"명사",lv:"N5"},
+{w:"中",r:"なか",m:"안/중",t:"명사",lv:"N5"},
+{w:"外",r:"そと",m:"밖",t:"명사",lv:"N5"},
+{w:"前",r:"まえ",m:"앞",t:"명사",lv:"N5"},
+{w:"後ろ",r:"うしろ",m:"뒤",t:"명사",lv:"N5"},
+{w:"いる",r:"いる",m:"있다(생물)",t:"동사",lv:"N5"},
+{w:"ある",r:"ある",m:"있다(사물)",t:"동사",lv:"N5"},
+{w:"来る",r:"くる",m:"오다",t:"동사",lv:"N5"},
+{w:"行く",r:"いく",m:"가다",t:"동사",lv:"N5"},
+{w:"する",r:"する",m:"하다",t:"동사",lv:"N5"},
+{w:"言う",r:"いう",m:"말하다",t:"동사",lv:"N5"},
+{w:"いい",r:"いい",m:"좋은",t:"い형용사",lv:"N5"},
+{w:"悪い",r:"わるい",m:"나쁜",t:"い형용사",lv:"N5"},
+{w:"一",r:"いち",m:"1",t:"명사",lv:"N5"},
+{w:"二",r:"に",m:"2",t:"명사",lv:"N5"},
+{w:"三",r:"さん",m:"3",t:"명사",lv:"N5"},
+{w:"四",r:"し/よん",m:"4",t:"명사",lv:"N5"},
+{w:"五",r:"ご",m:"5",t:"명사",lv:"N5"},
+{w:"十",r:"じゅう",m:"10",t:"명사",lv:"N5"},
+{w:"百",r:"ひゃく",m:"100",t:"명사",lv:"N5"},
+{w:"千",r:"せん",m:"1000",t:"명사",lv:"N5"},
+{w:"今",r:"いま",m:"지금",t:"명사",lv:"N5"},
+{w:"何",r:"なに",m:"무엇",t:"명사",lv:"N5"},
+{w:"誰",r:"だれ",m:"누구",t:"명사",lv:"N5"},
+{w:"どこ",r:"どこ",m:"어디",t:"명사",lv:"N5"},
+{w:"これ",r:"これ",m:"이것",t:"명사",lv:"N5"},
+{w:"それ",r:"それ",m:"그것",t:"명사",lv:"N5"}
 ];
 
-let activeLv=new Set(['N1','N2','N3','회화']);
+// ════ localStorage helpers ════
+const LS={
+  get(k){try{return JSON.parse(localStorage.getItem('jlpt_'+k))}catch{return null}},
+  set(k,v){try{localStorage.setItem('jlpt_'+k,JSON.stringify(v))}catch{}}
+};
+
+// ════ State ════
+let activeLv=new Set(['N1','N2','N3','N4','N5','회화']);
 let queue=[],idx=0,isRevealed=false,kn=0,dn=0;
 let kanaModes={d:'hira',m:'hira'};
 let currentHighlights=new Set();
+let reviewMode=false;
+let searchQuery='';
 
-const lvStyle={
-  N1:{bg:'#EEEDFE',c:'#3C3489'},
-  N2:{bg:'#E1F5EE',c:'#085041'},
-  N3:{bg:'#FAEEDA',c:'#633806'},
-  '회화':{bg:'#FBEAF0',c:'#72243E'},
-};
-
-function hiraToKata(set){
-  const out=new Set();
-  set.forEach(ch=>{
-    const code=ch.charCodeAt(0);
-    if(code>=0x3041&&code<=0x3096)out.add(String.fromCharCode(code+0x60));
-    else out.add(ch);
-  });
-  return out;
+// ════ Learning records ════
+let wrongSet=new Set(LS.get('wrong_set')||[]);
+let knownSet=new Set(LS.get('known_set')||[]);
+function wordKey(w){return w.w+'_'+w.lv}
+function saveRecord(w,know){
+  const k=wordKey(w);
+  if(know){knownSet.add(k);wrongSet.delete(k);}
+  else{wrongSet.add(k);knownSet.delete(k);}
+  LS.set('wrong_set',[...wrongSet]);
+  LS.set('known_set',[...knownSet]);
 }
 
+// ════ TTS ════
+const ttsOK='speechSynthesis' in window;
+function speak(text){
+  if(!ttsOK||!isRevealed)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ja-JP';u.rate=0.9;
+  speechSynthesis.speak(u);
+}
+
+// ════ Level style ════
+const lvStyle={
+  N1:{bg:'#EEEDFE',c:'#3C3489'},N2:{bg:'#E1F5EE',c:'#085041'},
+  N3:{bg:'#FAEEDA',c:'#633806'},N4:{bg:'#E8F4FD',c:'#1A5276'},
+  N5:{bg:'#E9F7EF',c:'#1E8449'},'회화':{bg:'#FBEAF0',c:'#72243E'},
+};
+
+// ════ Theme ════
+function applyTheme(mode){
+  const h=document.documentElement;
+  if(mode==='dark')h.setAttribute('data-theme','dark');
+  else if(mode==='light')h.setAttribute('data-theme','light');
+  else h.removeAttribute('data-theme');
+  [['th-sys','system'],['th-light','light'],['th-dark','dark']].forEach(([id,val])=>{
+    ['','m-'].forEach(p=>{const el=document.getElementById(p+id);if(el)el.classList.toggle('on',val===mode);});
+  });
+  LS.set('theme',mode);
+}
+function setTheme(mode){applyTheme(mode);}
+applyTheme(LS.get('theme')||'system');
+
+// ════ Session timer (not persisted) ════
+let timerSec=0,timerRunning=false,timerInt=null;
+function fmtTime(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return[h,m,ss].map(n=>String(n).padStart(2,'0')).join(':');}
+function tickTimer(){timerSec++;['d','m'].forEach(s=>{const e=document.getElementById(s+'-sv-timer');if(e)e.textContent=fmtTime(timerSec);});}
+function startTimer(){if(!timerRunning){timerRunning=true;timerInt=setInterval(tickTimer,1000);}}
+function stopTimer(){timerRunning=false;clearInterval(timerInt);}
+document.addEventListener('visibilitychange',()=>{document.visibilityState==='hidden'?stopTimer():startTimer();});
+startTimer();
+
+// ════ Kana ════
+function hiraToKata(set){
+  const out=new Set();
+  set.forEach(ch=>{const code=ch.charCodeAt(0);if(code>=0x3041&&code<=0x3096)out.add(String.fromCharCode(code+0x60));else out.add(ch);});
+  return out;
+}
 function buildKana(rows,hl){
   return rows.map(row=>`
     <div class="kana-group">
@@ -885,7 +1093,6 @@ function buildKana(rows,hl){
       </div>
     </div>`).join('');
 }
-
 function showKana(mode,side,btn){
   kanaModes[side]=mode;
   const contentId=side==='d'?'d-kana-content':'m-kana-content';
@@ -897,14 +1104,10 @@ function showKana(mode,side,btn){
   const hl=mode==='hira'?currentHighlights:hiraToKata(currentHighlights);
   document.getElementById(contentId).innerHTML=buildKana(rows,hl);
 }
+function rebuildKana(){showKana(kanaModes.d,'d',null);showKana(kanaModes.m,'m',null);}
 
-function rebuildKana(){
-  showKana(kanaModes.d,'d',null);
-  showKana(kanaModes.m,'m',null);
-}
-
+// ════ Helpers ════
 function $(id){return document.getElementById(id)}
-
 function updateStats(){
   const left=Math.max(0,queue.length-idx);
   ['d','m'].forEach(s=>{
@@ -914,7 +1117,43 @@ function updateStats(){
     $(`${s}-sv-total`).textContent=queue.length;
   });
 }
+function updateReviewBanner(){
+  ['d','m'].forEach(s=>{const b=$(`${s}-review-banner`);if(b)b.classList.toggle('show',reviewMode);});
+}
 
+// ════ Search ════
+function handleSearch(val,side){
+  const other=side==='d'?'m':'d';
+  const otherEl=document.getElementById(other+'-search');
+  if(otherEl)otherEl.value=val;
+  ['d','m'].forEach(s=>{const c=$(`${s}-search-clear`);if(c)c.classList.toggle('show',val.length>0);});
+  searchQuery=val.trim().toLowerCase();
+  if(!searchQuery){if(!reviewMode)doShuffle();return;}
+  const pool=reviewMode
+    ?vocab.filter(v=>wrongSet.has(wordKey(v))&&activeLv.has(v.lv))
+    :vocab.filter(v=>activeLv.has(v.lv));
+  queue=pool.filter(v=>v.w.includes(val.trim())||v.r.includes(val.trim())||v.m.toLowerCase().includes(searchQuery));
+  idx=0;kn=0;dn=0;updateStats();renderCard();
+}
+function clearSearch(side){
+  const el=document.getElementById(side+'-search');if(el)el.value='';
+  const oEl=document.getElementById((side==='d'?'m':'d')+'-search');if(oEl)oEl.value='';
+  handleSearch('',side);
+}
+
+// ════ Review mode ════
+function enterReviewMode(){
+  const pool=vocab.filter(v=>wrongSet.has(wordKey(v))&&activeLv.has(v.lv));
+  if(pool.length===0){alert('복습할 단어가 없습니다.\n먼저 ✗ 몰라요를 체크해주세요!');return;}
+  reviewMode=true;
+  queue=pool.sort(()=>Math.random()-.5);
+  idx=0;kn=0;dn=0;
+  ['d','m'].forEach(s=>{const el=$(`${s}-review-txt`);if(el)el.textContent=`📝 오답 복습 모드 (${pool.length}개)`;});
+  updateReviewBanner();updateStats();renderCard();
+}
+function exitReviewMode(){reviewMode=false;updateReviewBanner();doShuffle();}
+
+// ════ Card render ════
 function renderCard(){
   currentHighlights=new Set();
   rebuildKana();
@@ -932,32 +1171,43 @@ function renderCard(){
   $('d-reveal').style.display='inline-block';
 
   if(idx>=total){
-    const done=`<div style="text-align:center;padding:20px"><div style="font-size:34px;color:var(--text);margin-bottom:8px">완료!</div><div style="font-size:15px;color:var(--text2);margin-bottom:16px">알아요 ${kn}개 · 몰라요 ${dn}개</div><button onclick="doShuffle()" style="padding:10px 22px;font-size:14px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text)">다시 시작</button></div>`;
+    const emptyMsg=queue.length===0&&searchQuery?'검색 결과가 없습니다':reviewMode?'복습 완료! 🎉':'완료! 🎉';
+    const btnLabel=reviewMode?'복습 종료':'다시 시작';
+    const btnAct=reviewMode?'exitReviewMode()':'doShuffle()';
+    const done=`<div style="text-align:center;padding:20px">
+      <div style="font-size:34px;color:var(--text);margin-bottom:8px">${emptyMsg}</div>
+      <div style="font-size:15px;color:var(--text2);margin-bottom:16px">알아요 ${kn}개 · 몰라요 ${dn}개</div>
+      <button onclick="${btnAct}" style="padding:10px 22px;font-size:14px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text)">${btnLabel}</button>
+    </div>`;
     $('d-card').innerHTML=done;$('m-card').innerHTML=done;
     $('d-reveal').style.display='none';$('m-reveal').style.display='none';
     return;
   }
   const w=queue[idx];const s=lvStyle[w.lv];
-  const html=`
+  const ttsDisabled=!ttsOK?'title="미지원 브라우저"':'';
+  const cardHtml=`
     <div class="lv-badge" style="background:${s.bg};color:${s.c}">${w.lv}</div>
     <div style="font-size:52px;letter-spacing:4px;color:var(--text);text-align:center;line-height:1.2">${w.w}</div>
     <div class="reading-el" style="font-size:21px;color:var(--purple);margin-top:10px;text-align:center;display:none">${w.r}</div>
     <div class="meaning-el" style="font-size:16px;color:var(--text2);margin-top:5px;text-align:center;display:none">${w.m}</div>
     <div class="type-el" style="font-size:12px;color:var(--text3);margin-top:3px;display:none">[${w.t}]</div>
-    <div class="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px">탭/클릭하면 정답 확인</div>`;
-  $('d-card').innerHTML=html;$('m-card').innerHTML=html;
+    <div class="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px">탭/클릭하면 정답 확인</div>
+    <button class="tts-btn" ${ttsDisabled} onclick="event.stopPropagation();speak(queue[idx]&&queue[idx].w)">🔊</button>`;
+  $('d-card').innerHTML=cardHtml;$('m-card').innerHTML=cardHtml;
   isRevealed=false;
 }
 
+// ════ Reveal ════
 function reveal(){
   if(idx>=queue.length||isRevealed)return;
   isRevealed=true;
   const w=queue[idx];
-  currentHighlights=new Set([...w.r].filter(ch=>/[\u3041-\u3096\u3099\u309A]/.test(ch)));
+  currentHighlights=new Set([...w.r].filter(ch=>/[ぁ-ゖ゙゚]/.test(ch)));
   ['d-card','m-card'].forEach(id=>{
-    document.getElementById(id).querySelectorAll('.reading-el,.meaning-el,.type-el').forEach(e=>e.style.display='block');
-    const hint=document.getElementById(id).querySelector('.card-hint');
-    if(hint)hint.style.display='none';
+    const card=document.getElementById(id);
+    card.querySelectorAll('.reading-el,.meaning-el,.type-el').forEach(e=>e.style.display='block');
+    const hint=card.querySelector('.card-hint');if(hint)hint.style.display='none';
+    const tts=card.querySelector('.tts-btn');if(tts&&ttsOK)tts.classList.add('active');
   });
   $('d-reveal').style.display='none';
   $('d-know').style.display='inline-block';
@@ -967,9 +1217,9 @@ function reveal(){
   $('m-action-row').style.display='grid';
   rebuildKana();
 }
-
 function onTap(side){if(!isRevealed)reveal();}
 
+// ════ Navigation ════
 function go(d){
   if(d>0)idx=Math.min(idx+1,queue.length);
   else idx=Math.max(idx-1,0);
@@ -977,20 +1227,27 @@ function go(d){
 }
 function mark(know){
   if(!isRevealed)return;
+  const w=queue[idx];
+  saveRecord(w,know);
   if(know)kn++;else dn++;
   go(1);
 }
+
+// ════ Shuffle / Level ════
 function doShuffle(){
+  if(searchQuery){handleSearch(searchQuery,'d');return;}
   queue=vocab.filter(v=>activeLv.has(v.lv)).sort(()=>Math.random()-.5);
-  idx=0;kn=0;dn=0;
-  updateStats();renderCard();
+  idx=0;kn=0;dn=0;updateStats();renderCard();
 }
 function toggleLv(lv,btn){
   if(activeLv.has(lv)){if(activeLv.size>1)activeLv.delete(lv);}
   else activeLv.add(lv);
-  document.querySelectorAll(`.lv-btn.${lv==='회화'?'kw':lv.toLowerCase()}`).forEach(b=>b.classList.toggle('on',activeLv.has(lv)));
-  doShuffle();
+  const cls=lv==='회화'?'kw':lv.toLowerCase();
+  document.querySelectorAll(`.lv-btn.${cls}`).forEach(b=>b.classList.toggle('on',activeLv.has(lv)));
+  if(!reviewMode)doShuffle();
 }
+
+// ════ Init ════
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 showKana('hira','d',null);showKana('hira','m',null);doShuffle();
 </script>
