@@ -11,416 +11,192 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>JLPT 단어 학습</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-    :root {
-      --bg: #ffffff;
-      --bg2: #f5f5f5;
-      --bg3: #efefef;
-      --text: #1a1a1a;
-      --text2: #555;
-      --text3: #999;
-      --border: rgba(0,0,0,0.12);
-      --border2: rgba(0,0,0,0.22);
-      --radius: 12px;
-      --radius-sm: 8px;
-      --purple: #7F77DD;
-      --purple-dark: #534AB7;
-      --purple-bg: #EEEDFE;
-      --purple-text: #3C3489;
-      --teal-bg: #E1F5EE;
-      --teal-text: #085041;
-      --teal-border: #1D9E75;
-      --amber-bg: #FAEEDA;
-      --amber-text: #633806;
-      --coral-bg: #FAECE7;
-      --coral-border: #D85A30;
-      --coral-text: #993C1D;
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#fff;--bg2:#f5f5f5;--bg3:#efefef;
+      --text:#1a1a1a;--text2:#555;--text3:#999;
+      --border:rgba(0,0,0,0.12);--border2:rgba(0,0,0,0.22);
+      --r:12px;--r-sm:8px;
+      --purple:#7F77DD;--purple-d:#534AB7;
+      --n1-bg:#EEEDFE;--n1-c:#3C3489;
+      --n2-bg:#E1F5EE;--n2-c:#085041;--n2-b:#1D9E75;
+      --n3-bg:#FAEEDA;--n3-c:#633806;
+      --kw-bg:#FBEAF0;--kw-c:#72243E;
+      --coral-bg:#FAECE7;--coral-b:#D85A30;--coral-c:#993C1D;
+      --hl-bg:#EEEDFE;--hl-border:#7F77DD;--hl-ch:#3C3489;--hl-rm:#534AB7;
     }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1c1e;
-        --bg2: #2c2c2e;
-        --bg3: #3a3a3c;
-        --text: #f2f2f7;
-        --text2: #aeaeb2;
-        --text3: #636366;
-        --border: rgba(255,255,255,0.12);
-        --border2: rgba(255,255,255,0.22);
-        --purple-bg: #2e2b5a;
-        --purple-text: #b0abf0;
-        --teal-bg: #0f3028;
-        --teal-text: #5dcaa5;
-        --amber-bg: #3a2a0a;
-        --amber-text: #f0b955;
-        --coral-bg: #3a1a0a;
-        --coral-text: #f0886a;
+    @media(prefers-color-scheme:dark){
+      :root{
+        --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+        --text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;
+        --border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.22);
+        --n1-bg:#2e2b5a;--n1-c:#b0abf0;
+        --n2-bg:#0f3028;--n2-c:#5dcaa5;
+        --n3-bg:#3a2a0a;--n3-c:#f0b955;
+        --kw-bg:#3a1a2a;--kw-c:#ed93b1;
+        --coral-bg:#3a1a0a;--coral-c:#f0886a;
+        --hl-bg:#2e2b5a;--hl-border:#7F77DD;--hl-ch:#b0abf0;--hl-rm:#7F77DD;
       }
     }
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif}
+    .lv-badge{font-size:11px;padding:3px 12px;border-radius:20px;margin-bottom:14px;font-weight:600;display:inline-block}
+    .kana-group{margin-bottom:7px}
+    .kana-label{font-size:9px;color:var(--text3);margin-bottom:2px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+    .kana-row{display:flex;gap:2px;overflow-x:auto;padding-bottom:2px}
+    .kana-row::-webkit-scrollbar{display:none}
+    .kc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:40px;width:40px;padding:4px 1px;border-radius:5px;border:0.5px solid var(--border);background:var(--bg2);transition:background .15s,border-color .15s}
+    .kc .ch{font-size:15px;color:var(--text);line-height:1.2}
+    .kc .rm{font-size:8px;color:var(--text3);margin-top:1px}
+    .kc.empty{border:none;background:transparent}
+    .kc.hl{background:var(--hl-bg);border-color:var(--hl-border);border-width:1px}
+    .kc.hl .ch{color:var(--hl-ch);font-weight:600}
+    .kc.hl .rm{color:var(--hl-rm)}
+    .ktab-row{display:flex;gap:5px;margin-bottom:8px}
+    .ktab{flex:1;padding:6px;font-size:12px;cursor:pointer;border:0.5px solid var(--border2);border-radius:var(--r-sm);background:transparent;color:var(--text2);min-height:32px}
+    .ktab.on{background:var(--n1-bg);color:var(--n1-c);border-color:transparent}
+    .lv-btn{padding:6px 12px;font-size:12px;border:0.5px solid var(--border2);border-radius:20px;cursor:pointer;background:transparent;color:var(--text2)}
+    .lv-btn.n1.on{background:var(--n1-bg);color:var(--n1-c);border-color:transparent}
+    .lv-btn.n2.on{background:var(--n2-bg);color:var(--n2-c);border-color:transparent}
+    .lv-btn.n3.on{background:var(--n3-bg);color:var(--n3-c);border-color:transparent}
+    .lv-btn.kw.on{background:var(--kw-bg);color:var(--kw-c);border-color:transparent}
+    .prog-bar{flex:1;height:5px;border-radius:3px;background:var(--bg3);overflow:hidden}
+    .prog-fill{height:100%;border-radius:3px;background:var(--purple);transition:width .3s}
+    .prog-txt{font-size:12px;color:var(--text3);white-space:nowrap;min-width:52px;text-align:right}
+    .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px 38px;position:relative;cursor:pointer;user-select:none;-webkit-user-select:none}
+    .card:active{background:var(--bg2)}
+    .reveal-btn{background:var(--purple);color:#fff;border:none;font-weight:600;cursor:pointer;border-radius:var(--r)}
+    .reveal-btn:active{background:var(--purple-d)}
+    .know-btn{border:1.5px solid var(--n2-b);color:var(--n2-c);background:transparent;cursor:pointer;border-radius:var(--r);font-weight:500}
+    .know-btn:active{background:var(--n2-bg)}
+    .dont-btn{border:1.5px solid var(--coral-b);color:var(--coral-c);background:transparent;cursor:pointer;border-radius:var(--r);font-weight:500}
+    .dont-btn:active{background:var(--coral-bg)}
+    .nav-btn{border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;border-radius:var(--r-sm)}
+    .nav-btn:active,.shuffle-btn:active{background:var(--bg2)}
+    .shuffle-btn{border:0.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;border-radius:20px}
+    .stat-card{background:var(--bg2);border-radius:var(--r-sm);text-align:center}
+    .stat-label{font-size:11px;color:var(--text3)}
+    .stat-val{font-weight:600;color:var(--text)}
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-      overflow-x: hidden;
+    @media(min-width:768px){
+      #mobile-layout{display:none}
+      #desktop-layout{display:flex;gap:14px;padding:16px;min-height:580px}
+      #d-left{width:220px;flex-shrink:0}
+      #d-kana{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:10px;max-height:580px;overflow-y:auto}
+      #d-right{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+      #d-topbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+      #d-topbar .lv-label{font-size:13px;color:var(--text2);font-weight:500}
+      #d-prog-row{display:flex;align-items:center;gap:8px}
+      #d-card{flex:1;min-height:240px}
+      #d-btn-row{display:flex;align-items:center;gap:8px}
+      #d-reveal{padding:10px 24px;font-size:15px;min-height:44px}
+      #d-know,#d-dont{padding:10px 18px;font-size:14px;min-height:44px}
+      #d-prev,#d-next{padding:9px 16px;font-size:13px;min-height:44px}
+      #d-shuffle{padding:6px 13px;font-size:12px}
+      #d-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+      #d-stats .stat-card{padding:8px 10px}
+      #d-stats .stat-val{font-size:20px}
     }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 16px;
-      padding-top: max(16px, env(safe-area-inset-top));
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    /* Header */
-    #header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 2px;
-    }
-    #header h1 {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text);
-      flex: 1;
-    }
-    #btn-shuffle {
-      padding: 7px 13px;
-      font-size: 13px;
-      border: 0.5px solid var(--border2);
-      border-radius: 20px;
-      cursor: pointer;
-      background: transparent;
-      color: var(--text2);
-      min-height: 36px;
-    }
-    #btn-shuffle:active { background: var(--bg2); }
-
-    /* Level toggles */
-    #lv-row { display: flex; gap: 8px; }
-    .lv-btn {
-      flex: 1;
-      padding: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      background: transparent;
-      color: var(--text2);
-      min-height: 38px;
-      transition: all .15s;
-    }
-    .lv-btn.n1.on { background: var(--purple-bg); color: var(--purple-text); border-color: transparent; }
-    .lv-btn.n2.on { background: var(--teal-bg); color: var(--teal-text); border-color: transparent; }
-    .lv-btn.n3.on { background: var(--amber-bg); color: var(--amber-text); border-color: transparent; }
-
-    /* Progress */
-    #prog-row { display: flex; align-items: center; gap: 10px; }
-    #prog-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--bg3); overflow: hidden; }
-    #prog-fill { height: 100%; border-radius: 3px; background: var(--purple); transition: width .35s; }
-    #prog-text { font-size: 12px; color: var(--text3); min-width: 52px; text-align: right; }
-
-    /* Flashcard */
-    #card {
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px 20px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 210px;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    #card:active { background: var(--bg2); }
-    .lv-badge {
-      font-size: 11px;
-      padding: 3px 12px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      font-weight: 600;
-      display: inline-block;
-    }
-    #word {
-      font-size: 52px;
-      letter-spacing: 4px;
-      color: var(--text);
-      text-align: center;
-      line-height: 1.2;
-    }
-    #reading {
-      font-size: 22px;
-      color: var(--purple);
-      margin-top: 12px;
-      text-align: center;
-      display: none;
-    }
-    #meaning {
-      font-size: 17px;
-      color: var(--text2);
-      margin-top: 6px;
-      text-align: center;
-      display: none;
-    }
-    #wtype {
-      font-size: 12px;
-      color: var(--text3);
-      margin-top: 4px;
-      display: none;
-    }
-    #card-hint {
-      font-size: 12px;
-      color: var(--text3);
-      position: absolute;
-      bottom: 12px;
-    }
-
-    /* Reveal button */
-    #reveal-btn {
-      width: 100%;
-      padding: 15px;
-      font-size: 17px;
-      font-weight: 600;
-      border-radius: var(--radius);
-      background: var(--purple);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      min-height: 54px;
-      letter-spacing: .3px;
-    }
-    #reveal-btn:active { background: var(--purple-dark); }
-
-    /* Kana panel */
-    #kana-panel {
-      display: none;
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px;
-    }
-    #kana-panel.open { display: block; }
-    #kana-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
-    .ktab {
-      flex: 1;
-      padding: 8px;
-      font-size: 13px;
-      cursor: pointer;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-sm);
-      background: transparent;
-      color: var(--text2);
-      min-height: 36px;
-    }
-    .ktab.on { background: var(--purple-bg); color: var(--purple-text); border-color: transparent; }
-    .kana-group { margin-bottom: 8px; }
-    .kana-label { font-size: 10px; color: var(--text3); margin-bottom: 3px; font-weight: 600; letter-spacing: .5px; }
-    .kana-row { display: flex; gap: 3px; overflow-x: auto; padding-bottom: 2px; }
-    .kana-row::-webkit-scrollbar { display: none; }
-    .kc {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 46px;
-      min-width: 46px;
-      padding: 5px 2px;
-      border-radius: 6px;
-      border: 0.5px solid var(--border);
-      background: var(--bg2);
-    }
-    .kc .ch { font-size: 16px; color: var(--text); line-height: 1.2; }
-    .kc .rm { font-size: 9px; color: var(--text3); margin-top: 2px; }
-    .kc.empty { border: none; background: transparent; }
-
-    /* Know / Don't know */
-    #action-row { display: none; grid-template-columns: 1fr 1fr; gap: 8px; }
-    #btn-know {
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 500;
-      border-radius: var(--radius);
-      cursor: pointer;
-      border: 1.5px solid var(--teal-border);
-      color: var(--teal-text);
-      background: transparent;
-      min-height: 52px;
-    }
-    #btn-know:active { background: var(--teal-bg); }
-    #btn-dontknow {
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 500;
-      border-radius: var(--radius);
-      cursor: pointer;
-      border: 1.5px solid var(--coral-border);
-      color: var(--coral-text);
-      background: transparent;
-      min-height: 52px;
-    }
-    #btn-dontknow:active { background: var(--coral-bg); }
-
-    /* Nav */
-    #nav-row { display: flex; gap: 8px; }
-    #btn-prev, #btn-next {
-      flex: 1;
-      padding: 12px;
-      font-size: 14px;
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      background: transparent;
-      color: var(--text2);
-      min-height: 46px;
-    }
-    #btn-prev:active, #btn-next:active { background: var(--bg2); }
-
-    /* Stats */
-    #stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .scard { background: var(--bg2); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
-    .slabel { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
-    .sval { font-size: 24px; font-weight: 600; }
-
-    /* Done */
-    #done-wrap { text-align: center; padding: 20px 16px; }
-    #done-wrap .big { font-size: 36px; margin-bottom: 10px; }
-    #done-wrap .sub { font-size: 15px; color: var(--text2); margin-bottom: 16px; }
-    #done-restart {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      border-radius: var(--radius);
-      border: 0.5px solid var(--border2);
-      background: transparent;
-      cursor: pointer;
-      color: var(--text);
-    }
-    #done-restart:active { background: var(--bg2); }
-
-    /* Install banner */
-    #install-banner {
-      display: none;
-      background: var(--purple-bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font-size: 13px;
-      color: var(--purple-text);
-      align-items: center;
-      gap: 10px;
-    }
-    #install-banner.show { display: flex; }
-    #install-btn {
-      margin-left: auto;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      background: var(--purple);
-      color: #fff;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    #close-banner {
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      color: var(--purple-text);
-      padding: 0 2px;
+    @media(max-width:767px){
+      #desktop-layout{display:none}
+      #mobile-layout{display:flex;flex-direction:column;gap:10px;padding:14px;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:max(14px,env(safe-area-inset-bottom))}
+      #m-topbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+      #m-prog-row{display:flex;align-items:center;gap:8px}
+      #m-card{min-height:200px}
+      #m-reveal{width:100%;padding:14px;font-size:16px;min-height:50px}
+      #m-kana-panel{display:none;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:12px}
+      #m-kana-panel.open{display:block}
+      #m-action-row{display:none;grid-template-columns:1fr 1fr;gap:8px}
+      #m-know,#m-dont{padding:13px;font-size:15px;min-height:50px}
+      #m-nav-row{display:flex;gap:8px}
+      #m-prev,#m-next,#m-shuffle{flex:1;padding:11px;font-size:13px;min-height:44px}
+      #m-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+      #m-stats .stat-card{padding:8px 4px}
+      #m-stats .stat-val{font-size:18px}
+      #m-stats .stat-label{font-size:10px}
     }
   </style>
 </head>
 <body>
-<div id="app">
 
-  <div id="install-banner">
-    <span>홈 화면에 앱으로 추가하세요</span>
-    <button id="install-btn" onclick="installApp()">추가</button>
-    <button id="close-banner" onclick="document.getElementById('install-banner').classList.remove('show')">×</button>
+<div id="desktop-layout">
+  <div id="d-left">
+    <div id="d-kana">
+      <div class="ktab-row">
+        <button class="ktab on" onclick="showKana('hira','d',this)">ひらがな</button>
+        <button class="ktab" onclick="showKana('kata','d',this)">カタカナ</button>
+      </div>
+      <div id="d-kana-content"></div>
+    </div>
   </div>
-
-  <div id="header">
-    <h1>JLPT 단어 학습</h1>
-    <button id="btn-shuffle" onclick="doShuffle()">셔플 ↺</button>
+  <div id="d-right">
+    <div id="d-topbar">
+      <span class="lv-label">레벨</span>
+      <button class="lv-btn n1 on" onclick="toggleLv('N1',this)">N1</button>
+      <button class="lv-btn n2 on" onclick="toggleLv('N2',this)">N2</button>
+      <button class="lv-btn n3 on" onclick="toggleLv('N3',this)">N3</button>
+      <button class="lv-btn kw on" onclick="toggleLv('회화',this)">회화</button>
+      <button class="shuffle-btn" id="d-shuffle" onclick="doShuffle()" style="margin-left:auto;padding:6px 13px;font-size:12px">셔플 ↺</button>
+    </div>
+    <div id="d-prog-row">
+      <div class="prog-bar"><div class="prog-fill" id="d-prog-fill" style="width:0%"></div></div>
+      <div class="prog-txt" id="d-prog-txt">0 / 0</div>
+    </div>
+    <div class="card" id="d-card" onclick="onTap('d')"></div>
+    <div id="d-btn-row">
+      <button class="nav-btn" id="d-prev" onclick="go(-1)">← 이전</button>
+      <button class="reveal-btn" id="d-reveal" onclick="reveal()">정답 확인</button>
+      <button class="know-btn" id="d-know" onclick="mark(true)" style="display:none">✓ 알아요</button>
+      <button class="dont-btn" id="d-dont" onclick="mark(false)" style="display:none">✗ 몰라요</button>
+      <button class="nav-btn" id="d-next" style="margin-left:auto" onclick="go(1)">다음 →</button>
+    </div>
+    <div id="d-stats">
+      <div class="stat-card"><div class="stat-label">알아요</div><div class="stat-val" id="d-sv-know" style="color:#1D9E75">0</div></div>
+      <div class="stat-card"><div class="stat-label">몰라요</div><div class="stat-val" id="d-sv-dont" style="color:#D85A30">0</div></div>
+      <div class="stat-card"><div class="stat-label">남은 단어</div><div class="stat-val" id="d-sv-left">0</div></div>
+      <div class="stat-card"><div class="stat-label">전체</div><div class="stat-val" id="d-sv-total" style="color:var(--text3)">0</div></div>
+    </div>
   </div>
+</div>
 
-  <div id="lv-row">
+<div id="mobile-layout">
+  <div id="m-topbar">
     <button class="lv-btn n1 on" onclick="toggleLv('N1',this)">N1</button>
     <button class="lv-btn n2 on" onclick="toggleLv('N2',this)">N2</button>
     <button class="lv-btn n3 on" onclick="toggleLv('N3',this)">N3</button>
+    <button class="lv-btn kw on" onclick="toggleLv('회화',this)">회화</button>
+    <button class="shuffle-btn" onclick="doShuffle()" style="margin-left:auto;padding:7px 13px;font-size:12px;min-height:34px">셔플 ↺</button>
   </div>
-
-  <div id="prog-row">
-    <div id="prog-bar"><div id="prog-fill" style="width:0%"></div></div>
-    <div id="prog-text">0 / 0</div>
+  <div id="m-prog-row">
+    <div class="prog-bar"><div class="prog-fill" id="m-prog-fill" style="width:0%"></div></div>
+    <div class="prog-txt" id="m-prog-txt">0 / 0</div>
   </div>
-
-  <div id="card" onclick="onCardTap()">
-    <div id="word-area" style="display:flex;flex-direction:column;align-items:center">
-      <div id="lv-badge" class="lv-badge"></div>
-      <div id="word"></div>
-      <div id="reading"></div>
-      <div id="meaning"></div>
-      <div id="wtype"></div>
+  <div class="card" id="m-card" onclick="onTap('m')"></div>
+  <button class="reveal-btn" id="m-reveal" onclick="reveal()">정답 확인</button>
+  <div id="m-kana-panel">
+    <div class="ktab-row">
+      <button class="ktab on" onclick="showKana('hira','m',this)">ひらがな</button>
+      <button class="ktab" onclick="showKana('kata','m',this)">カタカナ</button>
     </div>
-    <div id="card-hint">탭하면 정답 확인</div>
+    <div id="m-kana-content"></div>
   </div>
-
-  <div id="reveal-wrap">
-    <button id="reveal-btn" onclick="reveal()">정답 확인</button>
+  <div id="m-action-row">
+    <button class="know-btn" id="m-know" onclick="mark(true)">✓ 알아요</button>
+    <button class="dont-btn" id="m-dont" onclick="mark(false)">✗ 몰라요</button>
   </div>
-
-  <div id="kana-panel">
-    <div id="kana-tabs">
-      <button class="ktab on" onclick="showKana('hira',this)">ひらがな</button>
-      <button class="ktab" onclick="showKana('kata',this)">カタカナ</button>
-    </div>
-    <div id="kana-content"></div>
+  <div id="m-nav-row">
+    <button class="nav-btn" id="m-prev" onclick="go(-1)">← 이전</button>
+    <button class="nav-btn" id="m-shuffle" onclick="doShuffle()">셔플 ↺</button>
+    <button class="nav-btn" id="m-next" onclick="go(1)">다음 →</button>
   </div>
-
-  <div id="action-row">
-    <button id="btn-know" onclick="mark(true)">✓ 알아요</button>
-    <button id="btn-dontknow" onclick="mark(false)">✗ 몰라요</button>
+  <div id="m-stats">
+    <div class="stat-card"><div class="stat-label">알아요</div><div class="stat-val" id="m-sv-know" style="color:#1D9E75">0</div></div>
+    <div class="stat-card"><div class="stat-label">몰라요</div><div class="stat-val" id="m-sv-dont" style="color:#D85A30">0</div></div>
+    <div class="stat-card"><div class="stat-label">남은 단어</div><div class="stat-val" id="m-sv-left">0</div></div>
+    <div class="stat-card"><div class="stat-label">전체</div><div class="stat-val" id="m-sv-total" style="color:var(--text3)">0</div></div>
   </div>
-
-  <div id="nav-row">
-    <button id="btn-prev" onclick="go(-1)">← 이전</button>
-    <button id="btn-next" onclick="go(1)">다음 →</button>
-  </div>
-
-  <div id="stats-row">
-    <div class="scard">
-      <div class="slabel">알아요</div>
-      <div class="sval" id="sv-know" style="color:#1D9E75">0</div>
-    </div>
-    <div class="scard">
-      <div class="slabel">몰라요</div>
-      <div class="sval" id="sv-dont" style="color:#D85A30">0</div>
-    </div>
-    <div class="scard">
-      <div class="slabel">남은 단어</div>
-      <div class="sval" id="sv-left">0</div>
-    </div>
-  </div>
-
 </div>
 
 <script>
-// ── 가나 데이터 ──
 const HIRA=[
   {t:"기본 모음",c:[["あ","a"],["い","i"],["う","u"],["え","e"],["お","o"]]},
   {t:"か행",c:[["か","ka"],["き","ki"],["く","ku"],["け","ke"],["こ","ko"]]},
@@ -454,180 +230,667 @@ const KATA=[
   {t:"반탁음",c:[["パ","pa"],["ピ","pi"],["プ","pu"],["ペ","pe"],["ポ","po"]]},
 ];
 
-// ── 단어 데이터 ──
 const vocab=[
-  {w:"語彙",r:"ごい",m:"어휘",t:"명사",lv:"N1"},{w:"曖昧",r:"あいまい",m:"애매함",t:"나형용사",lv:"N1"},
-  {w:"把握",r:"はあく",m:"파악",t:"명사",lv:"N1"},{w:"概念",r:"がいねん",m:"개념",t:"명사",lv:"N1"},
-  {w:"妥協",r:"だきょう",m:"타협",t:"명사",lv:"N1"},{w:"矛盾",r:"むじゅん",m:"모순",t:"명사",lv:"N1"},
-  {w:"抽象",r:"ちゅうしょう",m:"추상",t:"명사",lv:"N1"},{w:"論理",r:"ろんり",m:"논리",t:"명사",lv:"N1"},
-  {w:"効率",r:"こうりつ",m:"효율",t:"명사",lv:"N1"},{w:"影響",r:"えいきょう",m:"영향",t:"명사",lv:"N1"},
-  {w:"貢献",r:"こうけん",m:"공헌",t:"명사",lv:"N1"},{w:"批判",r:"ひはん",m:"비판",t:"명사",lv:"N1"},
-  {w:"維持",r:"いじ",m:"유지",t:"명사",lv:"N1"},{w:"促進",r:"そくしん",m:"촉진",t:"명사",lv:"N1"},
-  {w:"統計",r:"とうけい",m:"통계",t:"명사",lv:"N1"},{w:"傾向",r:"けいこう",m:"경향",t:"명사",lv:"N1"},
-  {w:"技術",r:"ぎじゅつ",m:"기술",t:"명사",lv:"N2"},{w:"経験",r:"けいけん",m:"경험",t:"명사",lv:"N2"},
-  {w:"文化",r:"ぶんか",m:"문화",t:"명사",lv:"N2"},{w:"政治",r:"せいじ",m:"정치",t:"명사",lv:"N2"},
-  {w:"経済",r:"けいざい",m:"경제",t:"명사",lv:"N2"},{w:"環境",r:"かんきょう",m:"환경",t:"명사",lv:"N2"},
-  {w:"成功",r:"せいこう",m:"성공",t:"명사",lv:"N2"},{w:"失敗",r:"しっぱい",m:"실패",t:"명사",lv:"N2"},
-  {w:"準備",r:"じゅんび",m:"준비",t:"명사",lv:"N2"},{w:"確認",r:"かくにん",m:"확인",t:"명사",lv:"N2"},
-  {w:"連絡",r:"れんらく",m:"연락",t:"명사",lv:"N2"},{w:"説明",r:"せつめい",m:"설명",t:"명사",lv:"N2"},
-  {w:"関係",r:"かんけい",m:"관계",t:"명사",lv:"N2"},{w:"問題",r:"もんだい",m:"문제",t:"명사",lv:"N2"},
-  {w:"研究",r:"けんきゅう",m:"연구",t:"명사",lv:"N2"},{w:"発展",r:"はってん",m:"발전",t:"명사",lv:"N2"},
-  {w:"時間",r:"じかん",m:"시간",t:"명사",lv:"N3"},{w:"仕事",r:"しごと",m:"일",t:"명사",lv:"N3"},
-  {w:"場所",r:"ばしょ",m:"장소",t:"명사",lv:"N3"},{w:"気持ち",r:"きもち",m:"기분",t:"명사",lv:"N3"},
-  {w:"生活",r:"せいかつ",m:"생활",t:"명사",lv:"N3"},{w:"食事",r:"しょくじ",m:"식사",t:"명사",lv:"N3"},
-  {w:"旅行",r:"りょこう",m:"여행",t:"명사",lv:"N3"},{w:"電話",r:"でんわ",m:"전화",t:"명사",lv:"N3"},
-  {w:"大切",r:"たいせつ",m:"소중함",t:"나형용사",lv:"N3"},{w:"便利",r:"べんり",m:"편리함",t:"나형용사",lv:"N3"},
-  {w:"大丈夫",r:"だいじょうぶ",m:"괜찮음",t:"나형용사",lv:"N3"},{w:"自由",r:"じゆう",m:"자유",t:"나형용사",lv:"N3"},
-  {w:"急ぐ",r:"いそぐ",m:"서두르다",t:"동사",lv:"N3"},{w:"続ける",r:"つづける",m:"계속하다",t:"동사",lv:"N3"},
-  {w:"決める",r:"きめる",m:"결정하다",t:"동사",lv:"N3"},{w:"集める",r:"あつめる",m:"모으다",t:"동사",lv:"N3"},
+{w:"語彙",r:"ごい",m:"어휘",t:"명사",lv:"N1"},
+{w:"曖昧",r:"あいまい",m:"애매함",t:"나형용사",lv:"N1"},
+{w:"把握",r:"はあく",m:"파악",t:"명사",lv:"N1"},
+{w:"概念",r:"がいねん",m:"개념",t:"명사",lv:"N1"},
+{w:"妥協",r:"だきょう",m:"타협",t:"명사",lv:"N1"},
+{w:"矛盾",r:"むじゅん",m:"모순",t:"명사",lv:"N1"},
+{w:"抽象",r:"ちゅうしょう",m:"추상",t:"명사",lv:"N1"},
+{w:"論理",r:"ろんり",m:"논리",t:"명사",lv:"N1"},
+{w:"効率",r:"こうりつ",m:"효율",t:"명사",lv:"N1"},
+{w:"影響",r:"えいきょう",m:"영향",t:"명사",lv:"N1"},
+{w:"貢献",r:"こうけん",m:"공헌",t:"명사",lv:"N1"},
+{w:"批判",r:"ひはん",m:"비판",t:"명사",lv:"N1"},
+{w:"維持",r:"いじ",m:"유지",t:"명사",lv:"N1"},
+{w:"促進",r:"そくしん",m:"촉진",t:"명사",lv:"N1"},
+{w:"統計",r:"とうけい",m:"통계",t:"명사",lv:"N1"},
+{w:"傾向",r:"けいこう",m:"경향",t:"명사",lv:"N1"},
+{w:"概要",r:"がいよう",m:"개요",t:"명사",lv:"N1"},
+{w:"原則",r:"げんそく",m:"원칙",t:"명사",lv:"N1"},
+{w:"基盤",r:"きばん",m:"기반",t:"명사",lv:"N1"},
+{w:"展望",r:"てんぼう",m:"전망",t:"명사",lv:"N1"},
+{w:"推移",r:"すいい",m:"추이",t:"명사",lv:"N1"},
+{w:"動向",r:"どうこう",m:"동향",t:"명사",lv:"N1"},
+{w:"実態",r:"じったい",m:"실태",t:"명사",lv:"N1"},
+{w:"課題",r:"かだい",m:"과제",t:"명사",lv:"N1"},
+{w:"対策",r:"たいさく",m:"대책",t:"명사",lv:"N1"},
+{w:"改善",r:"かいぜん",m:"개선",t:"명사",lv:"N1"},
+{w:"評価",r:"ひょうか",m:"평가",t:"명사",lv:"N1"},
+{w:"検討",r:"けんとう",m:"검토",t:"명사",lv:"N1"},
+{w:"分析",r:"ぶんせき",m:"분석",t:"명사",lv:"N1"},
+{w:"構築",r:"こうちく",m:"구축",t:"명사",lv:"N1"},
+{w:"整備",r:"せいび",m:"정비",t:"명사",lv:"N1"},
+{w:"調整",r:"ちょうせい",m:"조정",t:"명사",lv:"N1"},
+{w:"配慮",r:"はいりょ",m:"배려",t:"명사",lv:"N1"},
+{w:"優先",r:"ゆうせん",m:"우선",t:"명사",lv:"N1"},
+{w:"厳格",r:"げんかく",m:"엄격함",t:"나형용사",lv:"N1"},
+{w:"柔軟",r:"じゅうなん",m:"유연함",t:"나형용사",lv:"N1"},
+{w:"徹底",r:"てってい",m:"철저",t:"명사",lv:"N1"},
+{w:"慎重",r:"しんちょう",m:"신중함",t:"나형용사",lv:"N1"},
+{w:"適切",r:"てきせつ",m:"적절함",t:"나형용사",lv:"N1"},
+{w:"妥当",r:"だとう",m:"타당함",t:"나형용사",lv:"N1"},
+{w:"主観",r:"しゅかん",m:"주관",t:"명사",lv:"N1"},
+{w:"客観",r:"きゃっかん",m:"객관",t:"명사",lv:"N1"},
+{w:"普遍",r:"ふへん",m:"보편",t:"명사",lv:"N1"},
+{w:"本質",r:"ほんしつ",m:"본질",t:"명사",lv:"N1"},
+{w:"現象",r:"げんしょう",m:"현상",t:"명사",lv:"N1"},
+{w:"理念",r:"りねん",m:"이념",t:"명사",lv:"N1"},
+{w:"思想",r:"しそう",m:"사상",t:"명사",lv:"N1"},
+{w:"価値",r:"かち",m:"가치",t:"명사",lv:"N1"},
+{w:"倫理",r:"りんり",m:"윤리",t:"명사",lv:"N1"},
+{w:"哲学",r:"てつがく",m:"철학",t:"명사",lv:"N1"},
+{w:"仮説",r:"かせつ",m:"가설",t:"명사",lv:"N1"},
+{w:"証明",r:"しょうめい",m:"증명",t:"명사",lv:"N1"},
+{w:"根拠",r:"こんきょ",m:"근거",t:"명사",lv:"N1"},
+{w:"実証",r:"じっしょう",m:"실증",t:"명사",lv:"N1"},
+{w:"検証",r:"けんしょう",m:"검증",t:"명사",lv:"N1"},
+{w:"論文",r:"ろんぶん",m:"논문",t:"명사",lv:"N1"},
+{w:"翻訳",r:"ほんやく",m:"번역",t:"명사",lv:"N1"},
+{w:"解釈",r:"かいしゃく",m:"해석",t:"명사",lv:"N1"},
+{w:"批評",r:"ひひょう",m:"비평",t:"명사",lv:"N1"},
+{w:"創造",r:"そうぞう",m:"창조",t:"명사",lv:"N1"},
+{w:"革新",r:"かくしん",m:"혁신",t:"명사",lv:"N1"},
+{w:"改革",r:"かいかく",m:"개혁",t:"명사",lv:"N1"},
+{w:"変革",r:"へんかく",m:"변혁",t:"명사",lv:"N1"},
+{w:"開拓",r:"かいたく",m:"개척",t:"명사",lv:"N1"},
+{w:"挑戦",r:"ちょうせん",m:"도전",t:"명사",lv:"N1"},
+{w:"克服",r:"こくふく",m:"극복",t:"명사",lv:"N1"},
+{w:"達成",r:"たっせい",m:"달성",t:"명사",lv:"N1"},
+{w:"実現",r:"じつげん",m:"실현",t:"명사",lv:"N1"},
+{w:"継続",r:"けいぞく",m:"계속",t:"명사",lv:"N1"},
+{w:"持続",r:"じぞく",m:"지속",t:"명사",lv:"N1"},
+{w:"安定",r:"あんてい",m:"안정",t:"명사",lv:"N1"},
+{w:"繁栄",r:"はんえい",m:"번영",t:"명사",lv:"N1"},
+{w:"推進",r:"すいしん",m:"추진",t:"명사",lv:"N1"},
+{w:"制約",r:"せいやく",m:"제약",t:"명사",lv:"N1"},
+{w:"潜在",r:"せんざい",m:"잠재",t:"명사",lv:"N1"},
+{w:"顕著",r:"けんちょ",m:"현저함",t:"나형용사",lv:"N1"},
+{w:"緻密",r:"ちみつ",m:"치밀함",t:"나형용사",lv:"N1"},
+{w:"卓越",r:"たくえつ",m:"탁월함",t:"나형용사",lv:"N1"},
+{w:"洗練",r:"せんれん",m:"세련됨",t:"명사",lv:"N1"},
+{w:"斬新",r:"ざんしん",m:"참신함",t:"나형용사",lv:"N1"},
+{w:"俯瞰",r:"ふかん",m:"조감",t:"명사",lv:"N1"},
+{w:"包括",r:"ほうかつ",m:"포괄",t:"명사",lv:"N1"},
+{w:"統合",r:"とうごう",m:"통합",t:"명사",lv:"N1"},
+{w:"鑑賞",r:"かんしょう",m:"감상",t:"명사",lv:"N1"},
+{w:"遂行",r:"すいこう",m:"수행",t:"명사",lv:"N1"},
+{w:"先駆",r:"せんく",m:"선구",t:"명사",lv:"N1"},
+{w:"合理",r:"ごうり",m:"합리",t:"명사",lv:"N1"},
+{w:"弊害",r:"へいがい",m:"폐해",t:"명사",lv:"N1"},
+{w:"是正",r:"ぜせい",m:"시정",t:"명사",lv:"N1"},
+{w:"抑制",r:"よくせい",m:"억제",t:"명사",lv:"N1"},
+{w:"喚起",r:"かんき",m:"환기",t:"명사",lv:"N1"},
+{w:"提唱",r:"ていしょう",m:"제창",t:"명사",lv:"N1"},
+{w:"模索",r:"もさく",m:"모색",t:"명사",lv:"N1"},
+{w:"懸念",r:"けねん",m:"우려",t:"명사",lv:"N1"},
+{w:"危惧",r:"きぐ",m:"위구",t:"명사",lv:"N1"},
+{w:"技術",r:"ぎじゅつ",m:"기술",t:"명사",lv:"N2"},
+{w:"経験",r:"けいけん",m:"경험",t:"명사",lv:"N2"},
+{w:"文化",r:"ぶんか",m:"문화",t:"명사",lv:"N2"},
+{w:"政治",r:"せいじ",m:"정치",t:"명사",lv:"N2"},
+{w:"経済",r:"けいざい",m:"경제",t:"명사",lv:"N2"},
+{w:"環境",r:"かんきょう",m:"환경",t:"명사",lv:"N2"},
+{w:"成功",r:"せいこう",m:"성공",t:"명사",lv:"N2"},
+{w:"失敗",r:"しっぱい",m:"실패",t:"명사",lv:"N2"},
+{w:"準備",r:"じゅんび",m:"준비",t:"명사",lv:"N2"},
+{w:"確認",r:"かくにん",m:"확인",t:"명사",lv:"N2"},
+{w:"連絡",r:"れんらく",m:"연락",t:"명사",lv:"N2"},
+{w:"説明",r:"せつめい",m:"설명",t:"명사",lv:"N2"},
+{w:"関係",r:"かんけい",m:"관계",t:"명사",lv:"N2"},
+{w:"問題",r:"もんだい",m:"문제",t:"명사",lv:"N2"},
+{w:"研究",r:"けんきゅう",m:"연구",t:"명사",lv:"N2"},
+{w:"発展",r:"はってん",m:"발전",t:"명사",lv:"N2"},
+{w:"情報",r:"じょうほう",m:"정보",t:"명사",lv:"N2"},
+{w:"社会",r:"しゃかい",m:"사회",t:"명사",lv:"N2"},
+{w:"国際",r:"こくさい",m:"국제",t:"명사",lv:"N2"},
+{w:"地域",r:"ちいき",m:"지역",t:"명사",lv:"N2"},
+{w:"機会",r:"きかい",m:"기회",t:"명사",lv:"N2"},
+{w:"必要",r:"ひつよう",m:"필요",t:"나형용사",lv:"N2"},
+{w:"重要",r:"じゅうよう",m:"중요함",t:"나형용사",lv:"N2"},
+{w:"特別",r:"とくべつ",m:"특별함",t:"나형용사",lv:"N2"},
+{w:"一般",r:"いっぱん",m:"일반",t:"명사",lv:"N2"},
+{w:"具体",r:"ぐたい",m:"구체",t:"명사",lv:"N2"},
+{w:"対応",r:"たいおう",m:"대응",t:"명사",lv:"N2"},
+{w:"目標",r:"もくひょう",m:"목표",t:"명사",lv:"N2"},
+{w:"計画",r:"けいかく",m:"계획",t:"명사",lv:"N2"},
+{w:"実施",r:"じっし",m:"실시",t:"명사",lv:"N2"},
+{w:"方針",r:"ほうしん",m:"방침",t:"명사",lv:"N2"},
+{w:"方法",r:"ほうほう",m:"방법",t:"명사",lv:"N2"},
+{w:"手段",r:"しゅだん",m:"수단",t:"명사",lv:"N2"},
+{w:"条件",r:"じょうけん",m:"조건",t:"명사",lv:"N2"},
+{w:"規則",r:"きそく",m:"규칙",t:"명사",lv:"N2"},
+{w:"制度",r:"せいど",m:"제도",t:"명사",lv:"N2"},
+{w:"組織",r:"そしき",m:"조직",t:"명사",lv:"N2"},
+{w:"管理",r:"かんり",m:"관리",t:"명사",lv:"N2"},
+{w:"運営",r:"うんえい",m:"운영",t:"명사",lv:"N2"},
+{w:"支援",r:"しえん",m:"지원",t:"명사",lv:"N2"},
+{w:"協力",r:"きょうりょく",m:"협력",t:"명사",lv:"N2"},
+{w:"交流",r:"こうりゅう",m:"교류",t:"명사",lv:"N2"},
+{w:"活動",r:"かつどう",m:"활동",t:"명사",lv:"N2"},
+{w:"参加",r:"さんか",m:"참가",t:"명사",lv:"N2"},
+{w:"実績",r:"じっせき",m:"실적",t:"명사",lv:"N2"},
+{w:"成果",r:"せいか",m:"성과",t:"명사",lv:"N2"},
+{w:"効果",r:"こうか",m:"효과",t:"명사",lv:"N2"},
+{w:"能力",r:"のうりょく",m:"능력",t:"명사",lv:"N2"},
+{w:"才能",r:"さいのう",m:"재능",t:"명사",lv:"N2"},
+{w:"知識",r:"ちしき",m:"지식",t:"명사",lv:"N2"},
+{w:"理解",r:"りかい",m:"이해",t:"명사",lv:"N2"},
+{w:"記憶",r:"きおく",m:"기억",t:"명사",lv:"N2"},
+{w:"判断",r:"はんだん",m:"판단",t:"명사",lv:"N2"},
+{w:"決定",r:"けってい",m:"결정",t:"명사",lv:"N2"},
+{w:"選択",r:"せんたく",m:"선택",t:"명사",lv:"N2"},
+{w:"比較",r:"ひかく",m:"비교",t:"명사",lv:"N2"},
+{w:"調査",r:"ちょうさ",m:"조사",t:"명사",lv:"N2"},
+{w:"報告",r:"ほうこく",m:"보고",t:"명사",lv:"N2"},
+{w:"提案",r:"ていあん",m:"제안",t:"명사",lv:"N2"},
+{w:"意見",r:"いけん",m:"의견",t:"명사",lv:"N2"},
+{w:"主張",r:"しゅちょう",m:"주장",t:"명사",lv:"N2"},
+{w:"議論",r:"ぎろん",m:"의론",t:"명사",lv:"N2"},
+{w:"交渉",r:"こうしょう",m:"교섭",t:"명사",lv:"N2"},
+{w:"契約",r:"けいやく",m:"계약",t:"명사",lv:"N2"},
+{w:"商品",r:"しょうひん",m:"상품",t:"명사",lv:"N2"},
+{w:"市場",r:"しじょう",m:"시장",t:"명사",lv:"N2"},
+{w:"消費",r:"しょうひ",m:"소비",t:"명사",lv:"N2"},
+{w:"生産",r:"せいさん",m:"생산",t:"명사",lv:"N2"},
+{w:"投資",r:"とうし",m:"투자",t:"명사",lv:"N2"},
+{w:"利益",r:"りえき",m:"이익",t:"명사",lv:"N2"},
+{w:"損失",r:"そんしつ",m:"손실",t:"명사",lv:"N2"},
+{w:"税金",r:"ぜいきん",m:"세금",t:"명사",lv:"N2"},
+{w:"給料",r:"きゅうりょう",m:"급료",t:"명사",lv:"N2"},
+{w:"収入",r:"しゅうにゅう",m:"수입",t:"명사",lv:"N2"},
+{w:"支出",r:"ししゅつ",m:"지출",t:"명사",lv:"N2"},
+{w:"予算",r:"よさん",m:"예산",t:"명사",lv:"N2"},
+{w:"費用",r:"ひよう",m:"비용",t:"명사",lv:"N2"},
+{w:"価格",r:"かかく",m:"가격",t:"명사",lv:"N2"},
+{w:"割引",r:"わりびき",m:"할인",t:"명사",lv:"N2"},
+{w:"交通",r:"こうつう",m:"교통",t:"명사",lv:"N2"},
+{w:"移動",r:"いどう",m:"이동",t:"명사",lv:"N2"},
+{w:"出発",r:"しゅっぱつ",m:"출발",t:"명사",lv:"N2"},
+{w:"到着",r:"とうちゃく",m:"도착",t:"명사",lv:"N2"},
+{w:"運転",r:"うんてん",m:"운전",t:"명사",lv:"N2"},
+{w:"予約",r:"よやく",m:"예약",t:"명사",lv:"N2"},
+{w:"申請",r:"しんせい",m:"신청",t:"명사",lv:"N2"},
+{w:"許可",r:"きょか",m:"허가",t:"명사",lv:"N2"},
+{w:"禁止",r:"きんし",m:"금지",t:"명사",lv:"N2"},
+{w:"注意",r:"ちゅうい",m:"주의",t:"명사",lv:"N2"},
+{w:"危険",r:"きけん",m:"위험",t:"나형용사",lv:"N2"},
+{w:"安全",r:"あんぜん",m:"안전",t:"나형용사",lv:"N2"},
+{w:"緊急",r:"きんきゅう",m:"긴급",t:"나형용사",lv:"N2"},
+{w:"医療",r:"いりょう",m:"의료",t:"명사",lv:"N2"},
+{w:"治療",r:"ちりょう",m:"치료",t:"명사",lv:"N2"},
+{w:"症状",r:"しょうじょう",m:"증상",t:"명사",lv:"N2"},
+{w:"手術",r:"しゅじゅつ",m:"수술",t:"명사",lv:"N2"},
+{w:"入院",r:"にゅういん",m:"입원",t:"명사",lv:"N2"},
+{w:"検査",r:"けんさ",m:"검사",t:"명사",lv:"N2"},
+{w:"診察",r:"しんさつ",m:"진찰",t:"명사",lv:"N2"},
+{w:"教育",r:"きょういく",m:"교육",t:"명사",lv:"N2"},
+{w:"授業",r:"じゅぎょう",m:"수업",t:"명사",lv:"N2"},
+{w:"試験",r:"しけん",m:"시험",t:"명사",lv:"N2"},
+{w:"成績",r:"せいせき",m:"성적",t:"명사",lv:"N2"},
+{w:"卒業",r:"そつぎょう",m:"졸업",t:"명사",lv:"N2"},
+{w:"入学",r:"にゅうがく",m:"입학",t:"명사",lv:"N2"},
+{w:"資格",r:"しかく",m:"자격",t:"명사",lv:"N2"},
+{w:"免許",r:"めんきょ",m:"면허",t:"명사",lv:"N2"},
+{w:"採用",r:"さいよう",m:"채용",t:"명사",lv:"N2"},
+{w:"就職",r:"しゅうしょく",m:"취직",t:"명사",lv:"N2"},
+{w:"退職",r:"たいしょく",m:"퇴직",t:"명사",lv:"N2"},
+{w:"転職",r:"てんしょく",m:"이직",t:"명사",lv:"N2"},
+{w:"昇進",r:"しょうしん",m:"승진",t:"명사",lv:"N2"},
+{w:"残業",r:"ざんぎょう",m:"야근",t:"명사",lv:"N2"},
+{w:"出張",r:"しゅっちょう",m:"출장",t:"명사",lv:"N2"},
+{w:"通知",r:"つうち",m:"통지",t:"명사",lv:"N2"},
+{w:"依頼",r:"いらい",m:"의뢰",t:"명사",lv:"N2"},
+{w:"承認",r:"しょうにん",m:"승인",t:"명사",lv:"N2"},
+{w:"申込",r:"もうしこみ",m:"신청",t:"명사",lv:"N2"},
+{w:"受付",r:"うけつけ",m:"접수",t:"명사",lv:"N2"},
+{w:"手続",r:"てつづき",m:"수속",t:"명사",lv:"N2"},
+{w:"薬",r:"くすり",m:"약",t:"명사",lv:"N2"},
+{w:"処方",r:"しょほう",m:"처방",t:"명사",lv:"N2"},
+{w:"退院",r:"たいいん",m:"퇴원",t:"명사",lv:"N2"},
+{w:"生命",r:"せいめい",m:"생명",t:"명사",lv:"N2"},
+{w:"健康",r:"けんこう",m:"건강",t:"명사",lv:"N2"},
+{w:"精神",r:"せいしん",m:"정신",t:"명사",lv:"N2"},
+{w:"体力",r:"たいりょく",m:"체력",t:"명사",lv:"N2"},
+{w:"減少",r:"げんしょう",m:"감소",t:"명사",lv:"N2"},
+{w:"増加",r:"ぞうか",m:"증가",t:"명사",lv:"N2"},
+{w:"不足",r:"ふそく",m:"부족",t:"명사",lv:"N2"},
+{w:"余裕",r:"よゆう",m:"여유",t:"명사",lv:"N2"},
+{w:"時間",r:"じかん",m:"시간",t:"명사",lv:"N3"},
+{w:"仕事",r:"しごと",m:"일",t:"명사",lv:"N3"},
+{w:"場所",r:"ばしょ",m:"장소",t:"명사",lv:"N3"},
+{w:"気持ち",r:"きもち",m:"기분",t:"명사",lv:"N3"},
+{w:"生活",r:"せいかつ",m:"생활",t:"명사",lv:"N3"},
+{w:"食事",r:"しょくじ",m:"식사",t:"명사",lv:"N3"},
+{w:"旅行",r:"りょこう",m:"여행",t:"명사",lv:"N3"},
+{w:"電話",r:"でんわ",m:"전화",t:"명사",lv:"N3"},
+{w:"大切",r:"たいせつ",m:"소중함",t:"나형용사",lv:"N3"},
+{w:"便利",r:"べんり",m:"편리함",t:"나형용사",lv:"N3"},
+{w:"大丈夫",r:"だいじょうぶ",m:"괜찮음",t:"나형용사",lv:"N3"},
+{w:"自由",r:"じゆう",m:"자유",t:"명사",lv:"N3"},
+{w:"友達",r:"ともだち",m:"친구",t:"명사",lv:"N3"},
+{w:"家族",r:"かぞく",m:"가족",t:"명사",lv:"N3"},
+{w:"子供",r:"こども",m:"아이",t:"명사",lv:"N3"},
+{w:"学生",r:"がくせい",m:"학생",t:"명사",lv:"N3"},
+{w:"先生",r:"せんせい",m:"선생님",t:"명사",lv:"N3"},
+{w:"会社",r:"かいしゃ",m:"회사",t:"명사",lv:"N3"},
+{w:"病院",r:"びょういん",m:"병원",t:"명사",lv:"N3"},
+{w:"学校",r:"がっこう",m:"학교",t:"명사",lv:"N3"},
+{w:"駅",r:"えき",m:"역",t:"명사",lv:"N3"},
+{w:"部屋",r:"へや",m:"방",t:"명사",lv:"N3"},
+{w:"電車",r:"でんしゃ",m:"전철",t:"명사",lv:"N3"},
+{w:"飛行機",r:"ひこうき",m:"비행기",t:"명사",lv:"N3"},
+{w:"自転車",r:"じてんしゃ",m:"자전거",t:"명사",lv:"N3"},
+{w:"お金",r:"おかね",m:"돈",t:"명사",lv:"N3"},
+{w:"映画",r:"えいが",m:"영화",t:"명사",lv:"N3"},
+{w:"音楽",r:"おんがく",m:"음악",t:"명사",lv:"N3"},
+{w:"読む",r:"よむ",m:"읽다",t:"동사",lv:"N3"},
+{w:"書く",r:"かく",m:"쓰다",t:"동사",lv:"N3"},
+{w:"聞く",r:"きく",m:"듣다",t:"동사",lv:"N3"},
+{w:"話す",r:"はなす",m:"말하다",t:"동사",lv:"N3"},
+{w:"見る",r:"みる",m:"보다",t:"동사",lv:"N3"},
+{w:"食べる",r:"たべる",m:"먹다",t:"동사",lv:"N3"},
+{w:"飲む",r:"のむ",m:"마시다",t:"동사",lv:"N3"},
+{w:"買う",r:"かう",m:"사다",t:"동사",lv:"N3"},
+{w:"売る",r:"うる",m:"팔다",t:"동사",lv:"N3"},
+{w:"作る",r:"つくる",m:"만들다",t:"동사",lv:"N3"},
+{w:"使う",r:"つかう",m:"사용하다",t:"동사",lv:"N3"},
+{w:"出る",r:"でる",m:"나가다",t:"동사",lv:"N3"},
+{w:"入る",r:"はいる",m:"들어가다",t:"동사",lv:"N3"},
+{w:"開ける",r:"あける",m:"열다",t:"동사",lv:"N3"},
+{w:"閉める",r:"しめる",m:"닫다",t:"동사",lv:"N3"},
+{w:"起きる",r:"おきる",m:"일어나다",t:"동사",lv:"N3"},
+{w:"寝る",r:"ねる",m:"자다",t:"동사",lv:"N3"},
+{w:"走る",r:"はしる",m:"달리다",t:"동사",lv:"N3"},
+{w:"歩く",r:"あるく",m:"걷다",t:"동사",lv:"N3"},
+{w:"泳ぐ",r:"およぐ",m:"수영하다",t:"동사",lv:"N3"},
+{w:"遊ぶ",r:"あそぶ",m:"놀다",t:"동사",lv:"N3"},
+{w:"働く",r:"はたらく",m:"일하다",t:"동사",lv:"N3"},
+{w:"休む",r:"やすむ",m:"쉬다",t:"동사",lv:"N3"},
+{w:"会う",r:"あう",m:"만나다",t:"동사",lv:"N3"},
+{w:"待つ",r:"まつ",m:"기다리다",t:"동사",lv:"N3"},
+{w:"持つ",r:"もつ",m:"갖다",t:"동사",lv:"N3"},
+{w:"送る",r:"おくる",m:"보내다",t:"동사",lv:"N3"},
+{w:"受ける",r:"うける",m:"받다",t:"동사",lv:"N3"},
+{w:"始める",r:"はじめる",m:"시작하다",t:"동사",lv:"N3"},
+{w:"終わる",r:"おわる",m:"끝나다",t:"동사",lv:"N3"},
+{w:"借りる",r:"かりる",m:"빌리다",t:"동사",lv:"N3"},
+{w:"教える",r:"おしえる",m:"가르치다",t:"동사",lv:"N3"},
+{w:"習う",r:"ならう",m:"배우다",t:"동사",lv:"N3"},
+{w:"考える",r:"かんがえる",m:"생각하다",t:"동사",lv:"N3"},
+{w:"忘れる",r:"わすれる",m:"잊다",t:"동사",lv:"N3"},
+{w:"覚える",r:"おぼえる",m:"기억하다",t:"동사",lv:"N3"},
+{w:"探す",r:"さがす",m:"찾다",t:"동사",lv:"N3"},
+{w:"信じる",r:"しんじる",m:"믿다",t:"동사",lv:"N3"},
+{w:"急ぐ",r:"いそぐ",m:"서두르다",t:"동사",lv:"N3"},
+{w:"続ける",r:"つづける",m:"계속하다",t:"동사",lv:"N3"},
+{w:"決める",r:"きめる",m:"결정하다",t:"동사",lv:"N3"},
+{w:"集める",r:"あつめる",m:"모으다",t:"동사",lv:"N3"},
+{w:"嬉しい",r:"うれしい",m:"기쁜",t:"い형용사",lv:"N3"},
+{w:"悲しい",r:"かなしい",m:"슬픈",t:"い형용사",lv:"N3"},
+{w:"楽しい",r:"たのしい",m:"즐거운",t:"い형용사",lv:"N3"},
+{w:"難しい",r:"むずかしい",m:"어려운",t:"い형용사",lv:"N3"},
+{w:"優しい",r:"やさしい",m:"친절한",t:"い형용사",lv:"N3"},
+{w:"新しい",r:"あたらしい",m:"새로운",t:"い형용사",lv:"N3"},
+{w:"古い",r:"ふるい",m:"오래된",t:"い형용사",lv:"N3"},
+{w:"大きい",r:"おおきい",m:"큰",t:"い형용사",lv:"N3"},
+{w:"小さい",r:"ちいさい",m:"작은",t:"い형용사",lv:"N3"},
+{w:"多い",r:"おおい",m:"많은",t:"い형용사",lv:"N3"},
+{w:"少ない",r:"すくない",m:"적은",t:"い형용사",lv:"N3"},
+{w:"高い",r:"たかい",m:"높은/비싼",t:"い형용사",lv:"N3"},
+{w:"安い",r:"やすい",m:"싼",t:"い형용사",lv:"N3"},
+{w:"速い",r:"はやい",m:"빠른",t:"い형용사",lv:"N3"},
+{w:"遅い",r:"おそい",m:"느린",t:"い형용사",lv:"N3"},
+{w:"暑い",r:"あつい",m:"더운",t:"い형용사",lv:"N3"},
+{w:"寒い",r:"さむい",m:"추운",t:"い형용사",lv:"N3"},
+{w:"暖かい",r:"あたたかい",m:"따뜻한",t:"い형용사",lv:"N3"},
+{w:"涼しい",r:"すずしい",m:"시원한",t:"い형용사",lv:"N3"},
+{w:"天気",r:"てんき",m:"날씨",t:"명사",lv:"N3"},
+{w:"晴れ",r:"はれ",m:"맑음",t:"명사",lv:"N3"},
+{w:"雨",r:"あめ",m:"비",t:"명사",lv:"N3"},
+{w:"雪",r:"ゆき",m:"눈(雪)",t:"명사",lv:"N3"},
+{w:"風",r:"かぜ",m:"바람",t:"명사",lv:"N3"},
+{w:"春",r:"はる",m:"봄",t:"명사",lv:"N3"},
+{w:"夏",r:"なつ",m:"여름",t:"명사",lv:"N3"},
+{w:"秋",r:"あき",m:"가을",t:"명사",lv:"N3"},
+{w:"冬",r:"ふゆ",m:"겨울",t:"명사",lv:"N3"},
+{w:"朝",r:"あさ",m:"아침",t:"명사",lv:"N3"},
+{w:"昼",r:"ひる",m:"점심",t:"명사",lv:"N3"},
+{w:"夜",r:"よる",m:"밤",t:"명사",lv:"N3"},
+{w:"今日",r:"きょう",m:"오늘",t:"명사",lv:"N3"},
+{w:"明日",r:"あした",m:"내일",t:"명사",lv:"N3"},
+{w:"昨日",r:"きのう",m:"어제",t:"명사",lv:"N3"},
+{w:"来週",r:"らいしゅう",m:"다음 주",t:"명사",lv:"N3"},
+{w:"先週",r:"せんしゅう",m:"지난 주",t:"명사",lv:"N3"},
+{w:"今年",r:"ことし",m:"올해",t:"명사",lv:"N3"},
+{w:"来年",r:"らいねん",m:"내년",t:"명사",lv:"N3"},
+{w:"去年",r:"きょねん",m:"작년",t:"명사",lv:"N3"},
+{w:"宿題",r:"しゅくだい",m:"숙제",t:"명사",lv:"N3"},
+{w:"発表",r:"はっぴょう",m:"발표",t:"명사",lv:"N3"},
+{w:"会議",r:"かいぎ",m:"회의",t:"명사",lv:"N3"},
+{w:"締め切り",r:"しめきり",m:"마감",t:"명사",lv:"N3"},
+{w:"上司",r:"じょうし",m:"상사",t:"명사",lv:"N3"},
+{w:"同僚",r:"どうりょう",m:"동료",t:"명사",lv:"N3"},
+{w:"男",r:"おとこ",m:"남자",t:"명사",lv:"N3"},
+{w:"女",r:"おんな",m:"여자",t:"명사",lv:"N3"},
+{w:"人",r:"ひと",m:"사람",t:"명사",lv:"N3"},
+{w:"店",r:"みせ",m:"가게",t:"명사",lv:"N3"},
+{w:"家",r:"いえ",m:"집",t:"명사",lv:"N3"},
+{w:"新聞",r:"しんぶん",m:"신문",t:"명사",lv:"N3"},
+{w:"貸す",r:"かす",m:"빌려주다",t:"동사",lv:"N3"},
+{w:"返す",r:"かえす",m:"돌려주다",t:"동사",lv:"N3"},
+{w:"見つける",r:"みつける",m:"발견하다",t:"동사",lv:"N3"},
+{w:"以外",r:"いがい",m:"이외",t:"명사",lv:"N3"},
+{w:"以上",r:"いじょう",m:"이상",t:"명사",lv:"N3"},
+{w:"以下",r:"いか",m:"이하",t:"명사",lv:"N3"},
+{w:"最初",r:"さいしょ",m:"처음",t:"명사",lv:"N3"},
+{w:"最後",r:"さいご",m:"마지막",t:"명사",lv:"N3"},
+{w:"順番",r:"じゅんばん",m:"순서",t:"명사",lv:"N3"},
+{w:"方向",r:"ほうこう",m:"방향",t:"명사",lv:"N3"},
+{w:"近く",r:"ちかく",m:"가까이",t:"명사",lv:"N3"},
+{w:"遠く",r:"とおく",m:"멀리",t:"명사",lv:"N3"},
+{w:"真ん中",r:"まんなか",m:"한가운데",t:"명사",lv:"N3"},
+{w:"挨拶",r:"あいさつ",m:"인사",t:"명사",lv:"회화"},
+{w:"返事",r:"へんじ",m:"대답",t:"명사",lv:"회화"},
+{w:"相談",r:"そうだん",m:"상담",t:"명사",lv:"회화"},
+{w:"冗談",r:"じょうだん",m:"농담",t:"명사",lv:"회화"},
+{w:"本当",r:"ほんとう",m:"정말",t:"나형용사",lv:"회화"},
+{w:"嘘",r:"うそ",m:"거짓말",t:"명사",lv:"회화"},
+{w:"秘密",r:"ひみつ",m:"비밀",t:"명사",lv:"회화"},
+{w:"噂",r:"うわさ",m:"소문",t:"명사",lv:"회화"},
+{w:"お願い",r:"おねがい",m:"부탁",t:"명사",lv:"회화"},
+{w:"遠慮",r:"えんりょ",m:"사양",t:"명사",lv:"회화"},
+{w:"ご飯",r:"ごはん",m:"밥",t:"명사",lv:"회화"},
+{w:"肉",r:"にく",m:"고기",t:"명사",lv:"회화"},
+{w:"魚",r:"さかな",m:"생선",t:"명사",lv:"회화"},
+{w:"野菜",r:"やさい",m:"채소",t:"명사",lv:"회화"},
+{w:"果物",r:"くだもの",m:"과일",t:"명사",lv:"회화"},
+{w:"お菓子",r:"おかし",m:"과자",t:"명사",lv:"회화"},
+{w:"料理",r:"りょうり",m:"요리",t:"명사",lv:"회화"},
+{w:"味",r:"あじ",m:"맛",t:"명사",lv:"회화"},
+{w:"甘い",r:"あまい",m:"단",t:"い형용사",lv:"회화"},
+{w:"辛い",r:"からい",m:"매운",t:"い형용사",lv:"회화"},
+{w:"苦い",r:"にがい",m:"쓴",t:"い형용사",lv:"회화"},
+{w:"美味しい",r:"おいしい",m:"맛있는",t:"い형용사",lv:"회화"},
+{w:"まずい",r:"まずい",m:"맛없는",t:"い형용사",lv:"회화"},
+{w:"水",r:"みず",m:"물",t:"명사",lv:"회화"},
+{w:"お茶",r:"おちゃ",m:"차(茶)",t:"명사",lv:"회화"},
+{w:"お酒",r:"おさけ",m:"술",t:"명사",lv:"회화"},
+{w:"頭",r:"あたま",m:"머리",t:"명사",lv:"회화"},
+{w:"顔",r:"かお",m:"얼굴",t:"명사",lv:"회화"},
+{w:"目",r:"め",m:"눈(目)",t:"명사",lv:"회화"},
+{w:"鼻",r:"はな",m:"코",t:"명사",lv:"회화"},
+{w:"口",r:"くち",m:"입",t:"명사",lv:"회화"},
+{w:"耳",r:"みみ",m:"귀",t:"명사",lv:"회화"},
+{w:"手",r:"て",m:"손",t:"명사",lv:"회화"},
+{w:"足",r:"あし",m:"발/다리",t:"명사",lv:"회화"},
+{w:"体",r:"からだ",m:"몸",t:"명사",lv:"회화"},
+{w:"心",r:"こころ",m:"마음",t:"명사",lv:"회화"},
+{w:"痛い",r:"いたい",m:"아픈",t:"い형용사",lv:"회화"},
+{w:"疲れる",r:"つかれる",m:"피곤하다",t:"동사",lv:"회화"},
+{w:"元気",r:"げんき",m:"건강함",t:"나형용사",lv:"회화"},
+{w:"病気",r:"びょうき",m:"병",t:"명사",lv:"회화"},
+{w:"怪我",r:"けが",m:"부상",t:"명사",lv:"회화"},
+{w:"もちろん",r:"もちろん",m:"물론",t:"부사",lv:"회화"},
+{w:"たぶん",r:"たぶん",m:"아마도",t:"부사",lv:"회화"},
+{w:"きっと",r:"きっと",m:"분명히",t:"부사",lv:"회화"},
+{w:"やはり",r:"やはり",m:"역시",t:"부사",lv:"회화"},
+{w:"なるほど",r:"なるほど",m:"그렇구나",t:"감탄사",lv:"회화"},
+{w:"ところで",r:"ところで",m:"그런데",t:"접속사",lv:"회화"},
+{w:"だから",r:"だから",m:"그래서",t:"접속사",lv:"회화"},
+{w:"でも",r:"でも",m:"하지만",t:"접속사",lv:"회화"},
+{w:"ただし",r:"ただし",m:"단(但)",t:"접속사",lv:"회화"},
+{w:"値段",r:"ねだん",m:"가격",t:"명사",lv:"회화"},
+{w:"売り場",r:"うりば",m:"매장",t:"명사",lv:"회화"},
+{w:"品物",r:"しなもの",m:"물건",t:"명사",lv:"회화"},
+{w:"在庫",r:"ざいこ",m:"재고",t:"명사",lv:"회화"},
+{w:"交換",r:"こうかん",m:"교환",t:"명사",lv:"회화"},
+{w:"返品",r:"へんぴん",m:"반품",t:"명사",lv:"회화"},
+{w:"領収書",r:"りょうしゅうしょ",m:"영수증",t:"명사",lv:"회화"},
+{w:"袋",r:"ふくろ",m:"봉투",t:"명사",lv:"회화"},
+{w:"愛",r:"あい",m:"사랑",t:"명사",lv:"회화"},
+{w:"怒り",r:"いかり",m:"화(怒)",t:"명사",lv:"회화"},
+{w:"喜び",r:"よろこび",m:"기쁨",t:"명사",lv:"회화"},
+{w:"悲しみ",r:"かなしみ",m:"슬픔",t:"명사",lv:"회화"},
+{w:"不安",r:"ふあん",m:"불안",t:"명사",lv:"회화"},
+{w:"緊張",r:"きんちょう",m:"긴장",t:"명사",lv:"회화"},
+{w:"恥ずかしい",r:"はずかしい",m:"부끄러운",t:"い형용사",lv:"회화"},
+{w:"寂しい",r:"さびしい",m:"외로운",t:"い형용사",lv:"회화"},
+{w:"羨ましい",r:"うらやましい",m:"부러운",t:"い형용사",lv:"회화"},
+{w:"驚く",r:"おどろく",m:"놀라다",t:"동사",lv:"회화"},
+{w:"掃除",r:"そうじ",m:"청소",t:"명사",lv:"회화"},
+{w:"洗濯",r:"せんたく",m:"세탁",t:"명사",lv:"회화"},
+{w:"片付ける",r:"かたづける",m:"정리하다",t:"동사",lv:"회화"},
+{w:"着替える",r:"きがえる",m:"갈아입다",t:"동사",lv:"회화"},
+{w:"化粧",r:"けしょう",m:"화장",t:"명사",lv:"회화"},
+{w:"入浴",r:"にゅうよく",m:"목욕",t:"명사",lv:"회화"},
+{w:"散歩",r:"さんぽ",m:"산책",t:"명사",lv:"회화"},
+{w:"買い物",r:"かいもの",m:"쇼핑",t:"명사",lv:"회화"},
+{w:"手紙",r:"てがみ",m:"편지",t:"명사",lv:"회화"},
+{w:"伝える",r:"つたえる",m:"전하다",t:"동사",lv:"회화"},
+{w:"頼む",r:"たのむ",m:"부탁하다",t:"동사",lv:"회화"},
+{w:"玄関",r:"げんかん",m:"현관",t:"명사",lv:"회화"},
+{w:"台所",r:"だいどころ",m:"부엌",t:"명사",lv:"회화"},
+{w:"風呂",r:"ふろ",m:"욕실",t:"명사",lv:"회화"},
+{w:"山",r:"やま",m:"산",t:"명사",lv:"회화"},
+{w:"川",r:"かわ",m:"강",t:"명사",lv:"회화"},
+{w:"海",r:"うみ",m:"바다",t:"명사",lv:"회화"},
+{w:"空",r:"そら",m:"하늘",t:"명사",lv:"회화"},
+{w:"星",r:"ほし",m:"별",t:"명사",lv:"회화"},
+{w:"月",r:"つき",m:"달",t:"명사",lv:"회화"},
+{w:"太陽",r:"たいよう",m:"태양",t:"명사",lv:"회화"},
+{w:"花",r:"はな",m:"꽃",t:"명사",lv:"회화"},
+{w:"木",r:"き",m:"나무",t:"명사",lv:"회화"},
+{w:"赤",r:"あか",m:"빨간색",t:"명사",lv:"회화"},
+{w:"青",r:"あお",m:"파란색",t:"명사",lv:"회화"},
+{w:"白",r:"しろ",m:"흰색",t:"명사",lv:"회화"},
+{w:"黒",r:"くろ",m:"검은색",t:"명사",lv:"회화"},
+{w:"黄色",r:"きいろ",m:"노란색",t:"명사",lv:"회화"},
+{w:"緑",r:"みどり",m:"초록색",t:"명사",lv:"회화"},
+{w:"茶色",r:"ちゃいろ",m:"갈색",t:"명사",lv:"회화"},
+{w:"紫",r:"むらさき",m:"보라색",t:"명사",lv:"회화"},
+{w:"犬",r:"いぬ",m:"개",t:"명사",lv:"회화"},
+{w:"猫",r:"ねこ",m:"고양이",t:"명사",lv:"회화"},
+{w:"鳥",r:"とり",m:"새",t:"명사",lv:"회화"},
+{w:"うさぎ",r:"うさぎ",m:"토끼",t:"명사",lv:"회화"},
+{w:"馬",r:"うま",m:"말(馬)",t:"명사",lv:"회화"},
+{w:"牛",r:"うし",m:"소",t:"명사",lv:"회화"},
+{w:"豚",r:"ぶた",m:"돼지",t:"명사",lv:"회화"},
+{w:"羊",r:"ひつじ",m:"양",t:"명사",lv:"회화"},
+{w:"熊",r:"くま",m:"곰",t:"명사",lv:"회화"},
+{w:"誕生日",r:"たんじょうび",m:"생일",t:"명사",lv:"회화"},
+{w:"結婚",r:"けっこん",m:"결혼",t:"명사",lv:"회화"},
+{w:"記念",r:"きねん",m:"기념",t:"명사",lv:"회화"},
+{w:"祝い",r:"いわい",m:"축하",t:"명사",lv:"회화"},
+{w:"お見舞い",r:"おみまい",m:"병문안",t:"명사",lv:"회화"},
+{w:"地下鉄",r:"ちかてつ",m:"지하철",t:"명사",lv:"회화"},
+{w:"新幹線",r:"しんかんせん",m:"신칸센",t:"명사",lv:"회화"},
+{w:"船",r:"ふね",m:"배(船)",t:"명사",lv:"회화"},
+{w:"趣味",r:"しゅみ",m:"취미",t:"명사",lv:"회화"},
+{w:"部下",r:"ぶか",m:"부하",t:"명사",lv:"회화"},
+{w:"会計",r:"かいけい",m:"계산(식당)",t:"명사",lv:"회화"},
+{w:"席",r:"せき",m:"자리",t:"명사",lv:"회화"},
+{w:"予約",r:"よやく",m:"예약",t:"명사",lv:"회화"},
+{w:"定員",r:"ていいん",m:"정원(定員)",t:"명사",lv:"회화"},
+{w:"満席",r:"まんせき",m:"만석",t:"명사",lv:"회화"},
+{w:"おつり",r:"おつり",m:"거스름돈",t:"명사",lv:"회화"},
+{w:"割り勘",r:"わりかん",m:"더치페이",t:"명사",lv:"회화"},
+{w:"ゆっくり",r:"ゆっくり",m:"천천히",t:"부사",lv:"회화"},
+{w:"急に",r:"きゅうに",m:"갑자기",t:"부사",lv:"회화"},
+{w:"最近",r:"さいきん",m:"최근",t:"부사",lv:"회화"},
+{w:"もうすぐ",r:"もうすぐ",m:"곧",t:"부사",lv:"회화"},
+{w:"いつも",r:"いつも",m:"항상",t:"부사",lv:"회화"},
+{w:"たまに",r:"たまに",m:"가끔",t:"부사",lv:"회화"},
+{w:"絶対",r:"ぜったい",m:"절대",t:"부사",lv:"회화"},
+{w:"特に",r:"とくに",m:"특히",t:"부사",lv:"회화"},
+{w:"全然",r:"ぜんぜん",m:"전혀",t:"부사",lv:"회화"},
+{w:"かなり",r:"かなり",m:"꽤",t:"부사",lv:"회화"},
+{w:"少し",r:"すこし",m:"조금",t:"부사",lv:"회화"},
+{w:"ずっと",r:"ずっと",m:"쭉/계속",t:"부사",lv:"회화"},
+{w:"まだ",r:"まだ",m:"아직",t:"부사",lv:"회화"},
+{w:"もう",r:"もう",m:"이미/더이상",t:"부사",lv:"회화"},
+{w:"コーヒー",r:"こーひー",m:"커피",t:"명사",lv:"회화"},
+{w:"パン",r:"ぱん",m:"빵",t:"명사",lv:"회화"},
+{w:"ジュース",r:"じゅーす",m:"주스",t:"명사",lv:"회화"},
+{w:"バス",r:"ばす",m:"버스",t:"명사",lv:"회화"},
+{w:"タクシー",r:"たくしー",m:"택시",t:"명사",lv:"회화"},
+{w:"ゲーム",r:"げーむ",m:"게임",t:"명사",lv:"회화"},
+{w:"メール",r:"めーる",m:"이메일",t:"명사",lv:"회화"},
+{w:"トイレ",r:"といれ",m:"화장실",t:"명사",lv:"회화"},
+{w:"スポーツ",r:"すぽーつ",m:"스포츠",t:"명사",lv:"회화"},
+{w:"コンサート",r:"こんさーと",m:"콘서트",t:"명사",lv:"회화"},
+{w:"ピンク",r:"ぴんく",m:"분홍색",t:"명사",lv:"회화"},
+{w:"ボーナス",r:"ぼーなす",m:"보너스",t:"명사",lv:"회화"},
+{w:"スマホ",r:"すまほ",m:"스마트폰",t:"명사",lv:"회화"},
+{w:"ネット",r:"ねっと",m:"인터넷",t:"명사",lv:"회화"},
+{w:"アプリ",r:"あぷり",m:"앱",t:"명사",lv:"회화"},
+{w:"パソコン",r:"ぱそこん",m:"PC",t:"명사",lv:"회화"}
 ];
 
-// ── 상태 ──
-let activeLv=new Set(['N1','N2','N3']);
-let queue=[],idx=0,isRevealed=false,kn=0,dn=0,kanaMode='hira';
-let deferredPrompt=null;
+let activeLv=new Set(['N1','N2','N3','회화']);
+let queue=[],idx=0,isRevealed=false,kn=0,dn=0;
+let kanaModes={d:'hira',m:'hira'};
+let currentHighlights=new Set();
 
-// ── PWA 설치 ──
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('install-banner').classList.add('show');
-});
-function installApp(){
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(()=>{
-    deferredPrompt=null;
-    document.getElementById('install-banner').classList.remove('show');
-  });
-}
-window.addEventListener('appinstalled', ()=>{
-  document.getElementById('install-banner').classList.remove('show');
-});
-
-// ── 서비스워커 등록 ──
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-
-// ── 가나표 ──
-function buildKana(rows){
-  return rows.map(row=>`
-    <div class="kana-group">
-      ${row.t ? `<div class="kana-label">${row.t}</div>` : ''}
-      <div class="kana-row">
-        ${row.c.map(([ch,rm])=> ch&&ch.trim()
-          ? `<div class="kc"><span class="ch">${ch}</span><span class="rm">${rm}</span></div>`
-          : `<div class="kc empty"></div>`
-        ).join('')}
-      </div>
-    </div>`).join('');
-}
-function showKana(mode, btn){
-  kanaMode = mode;
-  document.querySelectorAll('.ktab').forEach(b=>b.classList.remove('on'));
-  if(btn) btn.classList.add('on');
-  else document.querySelectorAll('.ktab')[mode==='hira'?0:1].classList.add('on');
-  document.getElementById('kana-content').innerHTML = buildKana(mode==='hira'?HIRA:KATA);
-}
-
-// ── 레벨 색상 ──
 const lvStyle={
   N1:{bg:'#EEEDFE',c:'#3C3489'},
   N2:{bg:'#E1F5EE',c:'#085041'},
   N3:{bg:'#FAEEDA',c:'#633806'},
+  '회화':{bg:'#FBEAF0',c:'#72243E'},
 };
 
-// ── 카드 렌더 ──
+function hiraToKata(set){
+  const out=new Set();
+  set.forEach(ch=>{
+    const code=ch.charCodeAt(0);
+    if(code>=0x3041&&code<=0x3096)out.add(String.fromCharCode(code+0x60));
+    else out.add(ch);
+  });
+  return out;
+}
+
+function buildKana(rows,hl){
+  return rows.map(row=>`
+    <div class="kana-group">
+      ${row.t?`<div class="kana-label">${row.t}</div>`:''}
+      <div class="kana-row">
+        ${row.c.map(([ch,rm])=>{
+          if(!ch||!ch.trim())return`<div class="kc empty"></div>`;
+          const h=hl&&hl.has(ch);
+          return`<div class="kc${h?' hl':''}"><span class="ch">${ch}</span><span class="rm">${rm}</span></div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function showKana(mode,side,btn){
+  kanaModes[side]=mode;
+  const contentId=side==='d'?'d-kana-content':'m-kana-content';
+  const panelSel=side==='d'?'#d-kana .ktab':'#m-kana-panel .ktab';
+  document.querySelectorAll(panelSel).forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  else{const tabs=document.querySelectorAll(panelSel);if(tabs[mode==='hira'?0:1])tabs[mode==='hira'?0:1].classList.add('on');}
+  const rows=mode==='hira'?HIRA:KATA;
+  const hl=mode==='hira'?currentHighlights:hiraToKata(currentHighlights);
+  document.getElementById(contentId).innerHTML=buildKana(rows,hl);
+}
+
+function rebuildKana(){
+  showKana(kanaModes.d,'d',null);
+  showKana(kanaModes.m,'m',null);
+}
+
+function $(id){return document.getElementById(id)}
+
+function updateStats(){
+  const left=Math.max(0,queue.length-idx);
+  ['d','m'].forEach(s=>{
+    $(`${s}-sv-know`).textContent=kn;
+    $(`${s}-sv-dont`).textContent=dn;
+    $(`${s}-sv-left`).textContent=left;
+    $(`${s}-sv-total`).textContent=queue.length;
+  });
+}
+
 function renderCard(){
+  currentHighlights=new Set();
+  rebuildKana();
   const total=queue.length;
-  const left=Math.max(0,total-idx);
-  document.getElementById('prog-text').textContent=`${Math.min(idx+1,total)} / ${total}`;
-  document.getElementById('prog-fill').style.width=total?Math.round((idx/total)*100)+'%':'0%';
-  document.getElementById('sv-left').textContent=left;
-  document.getElementById('kana-panel').classList.remove('open');
-  document.getElementById('action-row').style.display='none';
+  ['d','m'].forEach(s=>{
+    $(`${s}-prog-txt`).textContent=`${Math.min(idx+1,total)} / ${total}`;
+    $(`${s}-prog-fill`).style.width=total?Math.round((idx/total)*100)+'%':'0%';
+  });
+  updateStats();
+  $('m-kana-panel').classList.remove('open');
+  $('m-action-row').style.display='none';
+  $('m-reveal').style.display='block';
+  $('d-know').style.display='none';
+  $('d-dont').style.display='none';
+  $('d-reveal').style.display='inline-block';
 
   if(idx>=total){
-    document.getElementById('card').innerHTML=`
-      <div id="done-wrap">
-        <div class="big">완료! 🎉</div>
-        <div class="sub">알아요 ${kn}개 · 몰라요 ${dn}개</div>
-        <button id="done-restart" onclick="doShuffle()">다시 시작</button>
-      </div>`;
-    document.getElementById('reveal-wrap').style.display='none';
-    document.getElementById('nav-row').style.display='none';
+    const done=`<div style="text-align:center;padding:20px"><div style="font-size:34px;color:var(--text);margin-bottom:8px">완료!</div><div style="font-size:15px;color:var(--text2);margin-bottom:16px">알아요 ${kn}개 · 몰라요 ${dn}개</div><button onclick="doShuffle()" style="padding:10px 22px;font-size:14px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text)">다시 시작</button></div>`;
+    $('d-card').innerHTML=done;$('m-card').innerHTML=done;
+    $('d-reveal').style.display='none';$('m-reveal').style.display='none';
     return;
   }
-
-  document.getElementById('reveal-wrap').style.display='block';
-  document.getElementById('nav-row').style.display='flex';
-
-  const w=queue[idx];
-  const s=lvStyle[w.lv];
-  document.getElementById('card').innerHTML=`
-    <div id="word-area" style="display:flex;flex-direction:column;align-items:center">
-      <div class="lv-badge" style="background:${s.bg};color:${s.c}">${w.lv}</div>
-      <div id="word" style="font-size:52px;letter-spacing:4px;color:var(--text);text-align:center;line-height:1.2">${w.w}</div>
-      <div id="reading" style="font-size:22px;color:var(--purple);margin-top:12px;text-align:center;display:none">${w.r}</div>
-      <div id="meaning" style="font-size:17px;color:var(--text2);margin-top:6px;text-align:center;display:none">${w.m}</div>
-      <div id="wtype" style="font-size:12px;color:var(--text3);margin-top:4px;display:none">[${w.t}]</div>
-    </div>
-    <div id="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px">탭하면 정답 확인</div>`;
+  const w=queue[idx];const s=lvStyle[w.lv];
+  const html=`
+    <div class="lv-badge" style="background:${s.bg};color:${s.c}">${w.lv}</div>
+    <div style="font-size:52px;letter-spacing:4px;color:var(--text);text-align:center;line-height:1.2">${w.w}</div>
+    <div class="reading-el" style="font-size:21px;color:var(--purple);margin-top:10px;text-align:center;display:none">${w.r}</div>
+    <div class="meaning-el" style="font-size:16px;color:var(--text2);margin-top:5px;text-align:center;display:none">${w.m}</div>
+    <div class="type-el" style="font-size:12px;color:var(--text3);margin-top:3px;display:none">[${w.t}]</div>
+    <div class="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px">탭/클릭하면 정답 확인</div>`;
+  $('d-card').innerHTML=html;$('m-card').innerHTML=html;
   isRevealed=false;
 }
 
 function reveal(){
-  if(idx>=queue.length||isRevealed) return;
+  if(idx>=queue.length||isRevealed)return;
   isRevealed=true;
-  ['reading','meaning','wtype'].forEach(id=>{
-    const e=document.getElementById(id);
-    if(e) e.style.display='block';
+  const w=queue[idx];
+  currentHighlights=new Set([...w.r].filter(ch=>/[\u3041-\u3096\u3099\u309A]/.test(ch)));
+  ['d-card','m-card'].forEach(id=>{
+    document.getElementById(id).querySelectorAll('.reading-el,.meaning-el,.type-el').forEach(e=>e.style.display='block');
+    const hint=document.getElementById(id).querySelector('.card-hint');
+    if(hint)hint.style.display='none';
   });
-  const hint=document.getElementById('card-hint');
-  if(hint) hint.style.display='none';
-  document.getElementById('reveal-btn').style.display='none';
-  document.getElementById('kana-panel').classList.add('open');
-  showKana(kanaMode,null);
-  document.getElementById('action-row').style.display='grid';
+  $('d-reveal').style.display='none';
+  $('d-know').style.display='inline-block';
+  $('d-dont').style.display='inline-block';
+  $('m-reveal').style.display='none';
+  $('m-kana-panel').classList.add('open');
+  $('m-action-row').style.display='grid';
+  rebuildKana();
 }
 
-function onCardTap(){ if(!isRevealed) reveal(); }
+function onTap(side){if(!isRevealed)reveal();}
 
 function go(d){
-  if(d>0) idx=Math.min(idx+1,queue.length);
+  if(d>0)idx=Math.min(idx+1,queue.length);
   else idx=Math.max(idx-1,0);
-  document.getElementById('reveal-btn').style.display='block';
   renderCard();
 }
-
 function mark(know){
-  if(!isRevealed) return;
-  if(know) kn++; else dn++;
-  document.getElementById('sv-know').textContent=kn;
-  document.getElementById('sv-dont').textContent=dn;
+  if(!isRevealed)return;
+  if(know)kn++;else dn++;
   go(1);
 }
-
 function doShuffle(){
   queue=vocab.filter(v=>activeLv.has(v.lv)).sort(()=>Math.random()-.5);
-  idx=0; kn=0; dn=0;
-  document.getElementById('sv-know').textContent='0';
-  document.getElementById('sv-dont').textContent='0';
-  document.getElementById('reveal-btn').style.display='block';
-  renderCard();
+  idx=0;kn=0;dn=0;
+  updateStats();renderCard();
 }
-
 function toggleLv(lv,btn){
-  if(activeLv.has(lv)){ if(activeLv.size>1) activeLv.delete(lv); }
+  if(activeLv.has(lv)){if(activeLv.size>1)activeLv.delete(lv);}
   else activeLv.add(lv);
-  btn.classList.toggle('on', activeLv.has(lv));
+  document.querySelectorAll(`.lv-btn.${lv==='회화'?'kw':lv.toLowerCase()}`).forEach(b=>b.classList.toggle('on',activeLv.has(lv)));
   doShuffle();
 }
-
-// ── 초기화 ──
-showKana('hira',null);
-doShuffle();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+showKana('hira','d',null);showKana('hira','m',null);doShuffle();
 </script>
 </body>
 </html>
