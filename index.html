@@ -519,6 +519,117 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
 .quiz-lv-row{
   display:flex;gap:6px;flex-wrap:wrap;padding:0;
 }
+/* 퀴즈 모드 탭 */
+.quiz-mode-row{display:flex;gap:6px;margin-bottom:2px}
+.quiz-mode-btn{
+  flex:1;padding:8px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  background:transparent;color:var(--text2);cursor:pointer;
+}
+.quiz-mode-btn.on{background:var(--purple-l);color:var(--purple);border-color:var(--purple)}
+/* 퀴즈 TTS 버튼 */
+.quiz-tts-btn{
+  margin-top:10px;padding:10px 20px;
+  font-size:20px;background:var(--bg3);
+  border:0.5px solid var(--border2);border-radius:12px;
+  cursor:pointer;display:inline-block;
+}
+.quiz-tts-btn:active{background:var(--bg4)}
+
+/* ══════════════════════════════════════════════
+   EXAM SCREEN
+══════════════════════════════════════════════ */
+#screen-exam{overflow:hidden}
+.exam-body{
+  flex:1;display:flex;flex-direction:column;gap:14px;
+  padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom));
+  overflow-y:auto;
+}
+.exam-body::-webkit-scrollbar{display:none}
+.exam-config{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:var(--r);padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+  box-shadow:var(--shadow);flex-shrink:0;
+}
+.exam-config-title{font-size:13px;font-weight:700;color:var(--text3)}
+.exam-count-row{display:flex;gap:6px;flex-wrap:wrap}
+.exam-count-btn{
+  padding:7px 16px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--border2);border-radius:20px;
+  background:transparent;color:var(--text2);cursor:pointer;
+}
+.exam-count-btn.on{background:var(--purple-l);color:var(--purple);border-color:var(--purple)}
+.exam-type-row{display:flex;gap:6px;flex-wrap:wrap}
+.exam-type-btn{
+  flex:1;padding:8px;font-size:12px;font-weight:600;
+  border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  background:transparent;color:var(--text2);cursor:pointer;text-align:center;
+}
+.exam-type-btn.on{background:var(--purple-l);color:var(--purple);border-color:var(--purple)}
+.exam-start-btn{
+  background:var(--purple);color:#fff;border:none;
+  border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;
+  cursor:pointer;
+}
+.exam-start-btn:active{background:var(--purple-d)}
+
+/* 시험 진행 */
+.exam-progress-row{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.exam-progress-text{font-size:13px;color:var(--text3);white-space:nowrap}
+.exam-question-card{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:var(--r);padding:28px 20px;
+  text-align:center;box-shadow:var(--shadow);flex-shrink:0;
+  position:relative;
+}
+.exam-q-lv{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px}
+.exam-q-word{font-size:48px;letter-spacing:4px;color:var(--text);line-height:1.2;margin-bottom:6px}
+.exam-q-sub{font-size:15px;color:var(--text3);margin-top:4px}
+.exam-choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0}
+.exam-choice{
+  background:var(--bg2);border:1.5px solid var(--border2);
+  border-radius:var(--r-sm);padding:14px 10px;
+  font-size:14px;font-weight:500;color:var(--text);
+  cursor:pointer;text-align:center;line-height:1.3;
+  transition:all .12s;
+}
+.exam-choice:active{background:var(--bg3)}
+.exam-choice.correct{background:var(--green-l);border-color:var(--green);color:var(--green);font-weight:700}
+.exam-choice.wrong{background:var(--coral-l);border-color:var(--coral);color:var(--coral)}
+.exam-choice.reveal{background:var(--green-l);border-color:var(--green);color:var(--green)}
+.exam-next-btn{
+  background:var(--purple);color:#fff;border:none;
+  border-radius:var(--r);padding:14px;font-size:15px;font-weight:700;
+  cursor:pointer;display:none;flex-shrink:0;
+}
+.exam-next-btn:active{background:var(--purple-d)}
+/* 시험 결과 */
+.exam-result{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;text-align:center;
+}
+.exam-result-score{font-size:64px;font-weight:800;color:var(--purple)}
+.exam-result-label{font-size:16px;color:var(--text2)}
+.exam-result-detail{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;
+}
+.exam-result-card{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:var(--r-sm);padding:12px;text-align:center;
+}
+.exam-result-val{font-size:24px;font-weight:800}
+.exam-result-lbl{font-size:11px;color:var(--text3);margin-top:2px}
+.exam-retry-btn{
+  background:var(--purple);color:#fff;border:none;
+  border-radius:var(--r);padding:13px 32px;font-size:15px;font-weight:700;cursor:pointer;
+}
+.exam-tts-btn{
+  margin-top:8px;padding:10px 20px;font-size:20px;
+  background:var(--bg3);border:0.5px solid var(--border2);
+  border-radius:12px;cursor:pointer;
+}
+.exam-tts-btn:active{background:var(--bg4)}
 
 /* ══════════════════════════════════════════════
    KANA SCREEN
@@ -698,7 +809,12 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
         <div class="menu-card-icon">🎮</div>
         <div class="menu-card-name">퀴즈</div>
         <div class="menu-card-desc">4지선다<br>단어 퀴즈</div>
-        <div class="menu-card-badge" style="background:#FEF3E2;color:#E67E22">NEW</div>
+      </div>
+      <div class="menu-card" onclick="goExam()" style="border-top:3px solid #E74C3C">
+        <div class="menu-card-icon">📝</div>
+        <div class="menu-card-name">모의시험</div>
+        <div class="menu-card-desc">시간제한 없는<br>실전 테스트</div>
+        <div class="menu-card-badge" style="background:#FDECEA;color:#E74C3C">NEW</div>
       </div>
       <div class="menu-card kana" onclick="goKana()">
         <div class="menu-card-icon">あ</div>
@@ -848,6 +964,12 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
     <span class="topbar-title">🎮 퀴즈</span>
   </div>
   <div class="quiz-body">
+    <!-- 모드 선택 -->
+    <div class="quiz-mode-row">
+      <button class="quiz-mode-btn on" id="qmode-meaning" onclick="setQuizMode('meaning',this)">한자→뜻</button>
+      <button class="quiz-mode-btn" id="qmode-word" onclick="setQuizMode('word',this)">뜻→한자</button>
+      <button class="quiz-mode-btn" id="qmode-reading" onclick="setQuizMode('reading',this)">한자→읽기</button>
+    </div>
     <!-- 레벨 선택 -->
     <div class="quiz-lv-row" id="quiz-lv-row">
       <button class="lv-btn n1" onclick="quizToggleLv('N1',this)">N1</button>
@@ -880,14 +1002,100 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
     </div>
     <!-- 문제 영역 -->
     <div id="quiz-area" style="display:none;flex-direction:column;gap:14px">
-      <div class="quiz-question">
+      <div class="quiz-question" style="position:relative">
         <div class="quiz-q-lv" id="quiz-q-lv"></div>
         <div class="quiz-q-word" id="quiz-q-word"></div>
         <div class="quiz-q-reading" id="quiz-q-reading"></div>
-        <div class="quiz-q-hint">이 단어의 뜻은?</div>
+        <div class="quiz-q-hint" id="quiz-q-hint">이 단어의 뜻은?</div>
+        <button class="quiz-tts-btn" onclick="speak($('quiz-q-word').textContent)">🔊</button>
       </div>
       <div class="quiz-choices" id="quiz-choices"></div>
       <button class="quiz-next-btn" id="quiz-next-btn" onclick="quizNext()">다음 문제 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     EXAM SCREEN
+══════════════════════════════ -->
+<div id="screen-exam" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" id="exam-back-btn" onclick="examBack()">←</button>
+    <span class="topbar-title">📝 모의시험</span>
+    <span id="exam-topbar-info" style="font-size:12px;color:var(--text3)"></span>
+  </div>
+
+  <!-- 설정 화면 -->
+  <div id="exam-config-view" class="exam-body">
+    <div class="exam-config">
+      <div class="exam-config-title">레벨 선택</div>
+      <div class="quiz-lv-row" id="exam-lv-row">
+        <button class="lv-btn n1" onclick="examToggleLv('N1',this)">N1</button>
+        <button class="lv-btn n2" onclick="examToggleLv('N2',this)">N2</button>
+        <button class="lv-btn n3" onclick="examToggleLv('N3',this)">N3</button>
+        <button class="lv-btn n4" onclick="examToggleLv('N4',this)">N4</button>
+        <button class="lv-btn n5" onclick="examToggleLv('N5',this)">N5</button>
+        <button class="lv-btn kw" onclick="examToggleLv('회화',this)">회화</button>
+      </div>
+    </div>
+    <div class="exam-config">
+      <div class="exam-config-title">문제 수</div>
+      <div class="exam-count-row">
+        <button class="exam-count-btn on" onclick="setExamCount(10,this)">10문제</button>
+        <button class="exam-count-btn" onclick="setExamCount(20,this)">20문제</button>
+        <button class="exam-count-btn" onclick="setExamCount(30,this)">30문제</button>
+        <button class="exam-count-btn" onclick="setExamCount(50,this)">50문제</button>
+      </div>
+    </div>
+    <div class="exam-config">
+      <div class="exam-config-title">문제 유형</div>
+      <div class="exam-type-row">
+        <button class="exam-type-btn on" onclick="setExamType('meaning',this)">📖 한자→뜻</button>
+        <button class="exam-type-btn" onclick="setExamType('word',this)">✍️ 뜻→한자</button>
+        <button class="exam-type-btn" onclick="setExamType('reading',this)">🔤 한자→읽기</button>
+        <button class="exam-type-btn" onclick="setExamType('mixed',this)">🎲 혼합</button>
+      </div>
+    </div>
+    <button class="exam-start-btn" onclick="startExam()">시험 시작 →</button>
+  </div>
+
+  <!-- 시험 진행 화면 -->
+  <div id="exam-play-view" class="exam-body" style="display:none">
+    <div class="exam-progress-row">
+      <div class="prog-bar"><div class="prog-fill" id="exam-prog-fill" style="width:0%"></div></div>
+      <div class="exam-progress-text" id="exam-prog-txt">0 / 0</div>
+    </div>
+    <div class="exam-question-card">
+      <div class="exam-q-lv" id="exam-q-lv"></div>
+      <div class="exam-q-word" id="exam-q-word"></div>
+      <div class="exam-q-sub" id="exam-q-sub"></div>
+      <button class="exam-tts-btn" onclick="speak($('exam-q-word').textContent)">🔊</button>
+    </div>
+    <div class="exam-choices" id="exam-choices"></div>
+    <button class="exam-next-btn" id="exam-next-btn" onclick="examNext()">다음 →</button>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div id="exam-result-view" class="exam-body" style="display:none">
+    <div class="exam-result">
+      <div style="font-size:48px" id="exam-result-emoji">🎉</div>
+      <div class="exam-result-score" id="exam-result-score">0점</div>
+      <div class="exam-result-label" id="exam-result-label"></div>
+      <div class="exam-result-detail">
+        <div class="exam-result-card">
+          <div class="exam-result-val" id="exam-res-correct" style="color:var(--green)">0</div>
+          <div class="exam-result-lbl">정답</div>
+        </div>
+        <div class="exam-result-card">
+          <div class="exam-result-val" id="exam-res-wrong" style="color:var(--coral)">0</div>
+          <div class="exam-result-lbl">오답</div>
+        </div>
+        <div class="exam-result-card">
+          <div class="exam-result-val" id="exam-res-total" style="color:var(--purple)">0</div>
+          <div class="exam-result-lbl">전체</div>
+        </div>
+      </div>
+      <button class="exam-retry-btn" onclick="examRetry()">다시 시험보기</button>
     </div>
   </div>
 </div>
@@ -1190,6 +1398,7 @@ function goReview(){
   updateReviewBanner();updateStats();renderCard();
 }
 function goQuiz(){showScreen('quiz');renderQuizEmpty();}
+function goExam(){showScreen('exam');$('exam-config-view').style.display='flex';$('exam-play-view').style.display='none';$('exam-result-view').style.display='none';}
 function goKana(){showScreen('kana');}
 function goStats(){showScreen('stats');}
 function goSettings(){showScreen('settings');}
@@ -1417,7 +1626,16 @@ function toggleLv(lv,btn){
 let quizActiveLv=new Set([]);
 let quizCorrect=0,quizWrong=0,quizStreak=0;
 let quizPool=[],quizCurrent=null,quizAnswered=false;
+let quizMode='meaning'; // meaning | word | reading
 
+function setQuizMode(mode,btn){
+  quizMode=mode;
+  document.querySelectorAll('.quiz-mode-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const hints={meaning:'이 단어의 뜻은?',word:'이 뜻에 맞는 단어는?',reading:'이 단어의 읽기는?'};
+  if($('quiz-q-hint'))$('quiz-q-hint').textContent=hints[mode]||'';
+  if(quizActiveLv.size>0)renderQuizQuestion();
+}
 function quizToggleLv(lv,btn){
   if(quizActiveLv.has(lv)){if(quizActiveLv.size>1)quizActiveLv.delete(lv);}
   else quizActiveLv.add(lv);
@@ -1426,68 +1644,177 @@ function quizToggleLv(lv,btn){
   renderQuizQuestion();
 }
 function renderQuizEmpty(){
-  if(quizActiveLv.size===0){
-    $('quiz-empty').style.display='flex';
-    $('quiz-area').style.display='none';
-  } else{
-    renderQuizQuestion();
-  }
+  if(quizActiveLv.size===0){$('quiz-empty').style.display='flex';$('quiz-area').style.display='none';}
+  else renderQuizQuestion();
 }
 function renderQuizQuestion(){
   quizPool=vocab.filter(v=>quizActiveLv.has(v.lv));
   if(quizPool.length<4){
     $('quiz-empty').style.display='flex';
     $('quiz-empty').innerHTML='<div style="font-size:40px">⚠️</div><div style="font-size:16px;font-weight:700;color:var(--text)">단어 부족</div><div style="font-size:13px;color:var(--text3)">레벨을 더 선택해주세요</div>';
-    $('quiz-area').style.display='none';
-    return;
+    $('quiz-area').style.display='none';return;
   }
-  $('quiz-empty').style.display='none';
-  $('quiz-area').style.display='flex';
-  $('quiz-next-btn').style.display='none';
-  quizAnswered=false;
+  $('quiz-empty').style.display='none';$('quiz-area').style.display='flex';
+  $('quiz-next-btn').style.display='none';quizAnswered=false;
 
   quizCurrent=quizPool[Math.floor(Math.random()*quizPool.length)];
   const s=lvStyle[quizCurrent.lv];
   $('quiz-q-lv').textContent=quizCurrent.lv;
   $('quiz-q-lv').style.cssText=`background:${s.bg};color:${s.c}`;
-  $('quiz-q-word').textContent=quizCurrent.w;
-  $('quiz-q-reading').textContent=quizCurrent.r;
-  $('quiz-q-reading').style.display='none';
 
-  // 오답 3개 선택
-  const wrongs=quizPool.filter(v=>v.w!==quizCurrent.w).sort(()=>Math.random()-.5).slice(0,3);
-  const choices=[...wrongs,quizCurrent].sort(()=>Math.random()-.5);
-  $('quiz-choices').innerHTML=choices.map((c,i)=>`
-    <div class="quiz-choice" onclick="quizAnswer(this,'${c.w}','${quizCurrent.w}')">
-      ${c.m}
-    </div>`).join('');
+  // 모드별 문제 표시
+  if(quizMode==='meaning'){
+    $('quiz-q-word').textContent=quizCurrent.w;
+    $('quiz-q-reading').textContent=quizCurrent.r;
+    $('quiz-q-reading').style.display='none';
+    $('quiz-q-hint').textContent='이 단어의 뜻은?';
+    const wrongs=quizPool.filter(v=>v.w!==quizCurrent.w).sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[...wrongs,quizCurrent].sort(()=>Math.random()-.5);
+    $('quiz-choices').innerHTML=choices.map(c=>`<div class="quiz-choice" onclick="quizAnswer(this,'${c.m.replace(/'/g,"\\'")}','${quizCurrent.m.replace(/'/g,"\\'")}','${quizCurrent.r.replace(/'/g,"\\'")}','${quizCurrent.w.replace(/'/g,"\\'")}')">${c.m}</div>`).join('');
+  } else if(quizMode==='word'){
+    $('quiz-q-word').textContent=quizCurrent.m;
+    $('quiz-q-reading').textContent='';$('quiz-q-reading').style.display='none';
+    $('quiz-q-hint').textContent='이 뜻에 맞는 단어는?';
+    const wrongs=quizPool.filter(v=>v.w!==quizCurrent.w).sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[...wrongs,quizCurrent].sort(()=>Math.random()-.5);
+    $('quiz-choices').innerHTML=choices.map(c=>`<div class="quiz-choice" onclick="quizAnswer(this,'${c.w.replace(/'/g,"\\'")}','${quizCurrent.w.replace(/'/g,"\\'")}','${quizCurrent.r.replace(/'/g,"\\'")}','${quizCurrent.w.replace(/'/g,"\\'")}')">${c.w}<br><small style="color:var(--text3)">${c.r}</small></div>`).join('');
+  } else {
+    $('quiz-q-word').textContent=quizCurrent.w;
+    $('quiz-q-reading').textContent='';$('quiz-q-reading').style.display='none';
+    $('quiz-q-hint').textContent='이 단어의 읽기는?';
+    const wrongs=quizPool.filter(v=>v.r!==quizCurrent.r).sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[...wrongs,quizCurrent].sort(()=>Math.random()-.5);
+    $('quiz-choices').innerHTML=choices.map(c=>`<div class="quiz-choice" onclick="quizAnswer(this,'${c.r.replace(/'/g,"\\'")}','${quizCurrent.r.replace(/'/g,"\\'")}','${quizCurrent.r.replace(/'/g,"\\'")}','${quizCurrent.w.replace(/'/g,"\\'")}')">${c.r}</div>`).join('');
+  }
 }
-function quizAnswer(el,chosen,correct){
+function quizAnswer(el,chosen,correct,reading,word){
   if(quizAnswered)return;
   quizAnswered=true;
-  $('quiz-q-reading').style.display='block';
-  document.querySelectorAll('.quiz-choice').forEach(c=>{
-    c.style.pointerEvents='none';
-  });
+  $('quiz-q-reading').textContent=reading;$('quiz-q-reading').style.display='block';
+  document.querySelectorAll('.quiz-choice').forEach(c=>c.style.pointerEvents='none');
   if(chosen===correct){
-    el.classList.add('correct');
-    quizCorrect++;quizStreak++;
-  } else{
-    el.classList.add('wrong');
-    quizCorrect;quizWrong++;quizStreak=0;
-    // 정답 표시
-    document.querySelectorAll('.quiz-choice').forEach(c=>{
-      if(c.textContent.trim()===vocab.find(v=>v.w===correct)?.m){
-        c.classList.add('reveal-correct');
-      }
-    });
+    el.classList.add('correct');quizCorrect++;quizStreak++;
+  } else {
+    el.classList.add('wrong');quizWrong++;quizStreak=0;
+    document.querySelectorAll('.quiz-choice').forEach(c=>{if(c.textContent.trim().split('\n')[0].trim()===correct||c.textContent.includes(correct))c.classList.add('reveal-correct');});
   }
   $('quiz-correct').textContent=quizCorrect;
   $('quiz-wrong').textContent=quizWrong;
   $('quiz-streak').textContent=quizStreak+'🔥';
   $('quiz-next-btn').style.display='block';
+  speak(word);
 }
 function quizNext(){renderQuizQuestion();}
+
+/* ══════════════════════════════════════════════
+   EXAM (모의시험)
+══════════════════════════════════════════════ */
+let examActiveLv=new Set([]);
+let examCount=10,examType='meaning';
+let examQueue=[],examIdx=0,examCorrectArr=[],examAnswered=false;
+
+function goExam(){showScreen('exam');$('exam-config-view').style.display='flex';$('exam-play-view').style.display='none';$('exam-result-view').style.display='none';}
+function examBack(){
+  if($('exam-play-view').style.display==='flex'||$('exam-result-view').style.display==='flex'){
+    if(!confirm('시험을 종료하시겠습니까?'))return;
+    $('exam-config-view').style.display='flex';$('exam-play-view').style.display='none';$('exam-result-view').style.display='none';
+    $('exam-topbar-info').textContent='';
+  } else showScreen('home');
+}
+function examToggleLv(lv,btn){
+  if(examActiveLv.has(lv)){if(examActiveLv.size>1)examActiveLv.delete(lv);}
+  else examActiveLv.add(lv);
+  const cls=lv==='회화'?'kw':lv.toLowerCase();
+  document.querySelectorAll(`#exam-lv-row .lv-btn.${cls}`).forEach(b=>b.classList.toggle('on',examActiveLv.has(lv)));
+}
+function setExamCount(n,btn){
+  examCount=n;
+  document.querySelectorAll('.exam-count-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function setExamType(t,btn){
+  examType=t;
+  document.querySelectorAll('.exam-type-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function startExam(){
+  if(examActiveLv.size===0){alert('레벨을 선택해주세요!');return;}
+  let pool=vocab.filter(v=>examActiveLv.has(v.lv));
+  if(pool.length<4){alert('단어가 부족합니다. 레벨을 더 선택해주세요.');return;}
+  pool=pool.sort(()=>Math.random()-.5);
+  examQueue=pool.slice(0,Math.min(examCount,pool.length));
+  examIdx=0;examCorrectArr=[];
+  $('exam-config-view').style.display='none';
+  $('exam-play-view').style.display='flex';
+  $('exam-result-view').style.display='none';
+  renderExamQuestion();
+}
+function getExamQuestionType(){
+  if(examType==='mixed'){const t=['meaning','word','reading'];return t[Math.floor(Math.random()*t.length)];}
+  return examType;
+}
+function renderExamQuestion(){
+  if(examIdx>=examQueue.length){showExamResult();return;}
+  examAnswered=false;
+  $('exam-next-btn').style.display='none';
+  const pct=Math.round((examIdx/examQueue.length)*100);
+  $('exam-prog-fill').style.width=pct+'%';
+  $('exam-prog-txt').textContent=`${examIdx+1} / ${examQueue.length}`;
+  $('exam-topbar-info').textContent=`${examIdx+1}/${examQueue.length}`;
+  const w=examQueue[examIdx];
+  const s=lvStyle[w.lv];
+  $('exam-q-lv').textContent=w.lv;$('exam-q-lv').style.cssText=`background:${s.bg};color:${s.c}`;
+  const qtype=getExamQuestionType();
+  const pool=vocab.filter(v=>examActiveLv.has(v.lv));
+  let qWord='',qSub='',correctKey='',choices=[];
+
+  if(qtype==='meaning'){
+    qWord=w.w;qSub=w.r;correctKey=w.m;
+    const wrongs=pool.filter(v=>v.m!==w.m).sort(()=>Math.random()-.5).slice(0,3);
+    choices=[...wrongs.map(v=>v.m),correctKey].sort(()=>Math.random()-.5);
+  } else if(qtype==='word'){
+    qWord=w.m;qSub=w.t;correctKey=w.w;
+    const wrongs=pool.filter(v=>v.w!==w.w).sort(()=>Math.random()-.5).slice(0,3);
+    choices=[...wrongs.map(v=>v.w),correctKey].sort(()=>Math.random()-.5);
+  } else {
+    qWord=w.w;qSub='읽기를 고르세요';correctKey=w.r;
+    const wrongs=pool.filter(v=>v.r!==w.r).sort(()=>Math.random()-.5).slice(0,3);
+    choices=[...wrongs.map(v=>v.r),correctKey].sort(()=>Math.random()-.5);
+  }
+  $('exam-q-word').textContent=qWord;
+  $('exam-q-sub').textContent=qtype==='meaning'?qSub:'';
+  $('exam-choices').innerHTML=choices.map(ch=>`<div class="exam-choice" onclick="examAnswer(this,'${ch.replace(/'/g,"\\'")}','${correctKey.replace(/'/g,"\\'")}','${w.w.replace(/'/g,"\\'")}')">${ch}</div>`).join('');
+  speak(w.w);
+}
+function examAnswer(el,chosen,correct,word){
+  if(examAnswered)return;
+  examAnswered=true;
+  document.querySelectorAll('.exam-choice').forEach(c=>c.style.pointerEvents='none');
+  const ok=chosen===correct;
+  el.classList.add(ok?'correct':'wrong');
+  if(!ok)document.querySelectorAll('.exam-choice').forEach(c=>{if(c.textContent.trim()===correct)c.classList.add('reveal');});
+  examCorrectArr.push(ok);
+  $('exam-next-btn').style.display='block';
+  speak(word);
+}
+function examNext(){examIdx++;renderExamQuestion();}
+function showExamResult(){
+  $('exam-play-view').style.display='none';$('exam-result-view').style.display='flex';
+  $('exam-topbar-info').textContent='';
+  const correct=examCorrectArr.filter(Boolean).length;
+  const total=examQueue.length;
+  const pct=Math.round((correct/total)*100);
+  $('exam-result-score').textContent=pct+'점';
+  const emoji=pct>=90?'🏆':pct>=70?'🎉':pct>=50?'😊':'💪';
+  $('exam-result-emoji').textContent=emoji;
+  const label=pct>=90?'완벽합니다!':pct>=70?'잘했어요!':pct>=50?'조금 더 노력해요!':'더 열심히 공부해봐요!';
+  $('exam-result-label').textContent=label;
+  $('exam-res-correct').textContent=correct;$('exam-res-wrong').textContent=total-correct;$('exam-res-total').textContent=total;
+}
+function examRetry(){
+  $('exam-config-view').style.display='flex';$('exam-play-view').style.display='none';$('exam-result-view').style.display='none';
+  $('exam-topbar-info').textContent='';
+}
 
 /* ══════════════════════════════════════════════
    STATS
