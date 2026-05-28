@@ -639,68 +639,73 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
 ══════════════════════════════════════════════ */
 #screen-kana{overflow:hidden}
 .kana-full-wrap{
-  flex:1;overflow:hidden;
-  padding:8px 10px max(8px,env(safe-area-inset-bottom));
-  display:flex;flex-direction:column;gap:6px;
+  flex:1;min-height:0;overflow:hidden;
+  display:flex;gap:6px;
+  padding:6px 8px max(6px,env(safe-area-inset-bottom));
 }
-/* 오십음도 테이블 */
-.gojuuon-wrap{
-  flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden;
+.gojuuon-panel{
+  flex:1;min-width:0;min-height:0;
+  display:flex;flex-direction:column;gap:0;
+  overflow:hidden;
 }
-.gojuuon-section{
-  display:flex;flex-direction:column;gap:2px;
-}
-.gojuuon-section-label{
+.gojuuon-panel-label{
   font-size:9px;font-weight:700;color:var(--text3);
-  text-transform:uppercase;letter-spacing:.6px;padding-left:2px;
+  letter-spacing:.6px;padding:0 2px 3px;flex-shrink:0;
 }
-.gojuuon-row{
-  display:grid;
-  grid-template-columns: 28px repeat(5,1fr);
-  gap:2px;
-}
-.gojuuon-row-hd{
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:var(--text3);font-weight:700;
-  background:var(--bg3);border-radius:4px;
-}
-.gojuuon-col-header{
-  display:grid;
-  grid-template-columns: 28px repeat(5,1fr);
-  gap:2px;margin-bottom:1px;
+.gojuuon-col-hds{
+  display:grid;gap:2px;flex-shrink:0;margin-bottom:2px;
 }
 .gojuuon-col-hd{
   display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:var(--text3);font-weight:700;
-  padding:2px 0;
+  font-size:8px;color:var(--text3);font-weight:700;
 }
-/* 셀 */
+/* 행들이 남은 공간을 균등 분할 */
+.gojuuon-rows{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;gap:2px;
+  overflow:hidden;
+}
+.gojuuon-row{
+  flex:1;min-height:0;
+  display:grid;gap:2px;
+}
+.gojuuon-row-hd{
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;color:var(--text3);font-weight:700;
+  background:var(--bg3);border-radius:3px;min-width:0;
+}
+/* 셀: 높이는 부모가 결정, 너비만 비율 */
 .gk{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border-radius:5px;border:.5px solid var(--border);
-  background:var(--bg2);
-  aspect-ratio:1/1;
-  min-height:0;
-  transition:background .12s;
+  border-radius:4px;border:.5px solid var(--border);
+  background:var(--bg2);min-height:0;overflow:hidden;
 }
-.gk .ch{font-size:clamp(11px,3.2vw,18px);color:var(--text);line-height:1.1;font-weight:500}
-.gk .rm{font-size:clamp(6px,1.6vw,9px);color:var(--text3);margin-top:1px}
+.gk .ch{
+  font-size:clamp(10px,2.8vw,20px);
+  color:var(--text);line-height:1.1;font-weight:500;
+}
+.gk .rm{
+  font-size:clamp(5px,1.3vw,9px);
+  color:var(--text3);margin-top:1px;
+}
 .gk.empty{border:none;background:transparent}
 .gk.small-kana{background:var(--purple-l)}
-.gk.small-kana .ch{color:var(--purple);font-size:clamp(10px,2.8vw,16px)}
+.gk.small-kana .ch{color:var(--purple)}
 .gk.special{background:var(--n3-bg)}
 .gk.special .ch{color:var(--n3-c)}
 
-/* 데스크탑: 2단 병렬 레이아웃 */
+/* 섹션 구분선 */
+.gojuuon-sep{
+  flex-shrink:0;height:1px;background:var(--border);margin:3px 0;
+}
+
+/* 데스크탑: 글자 조금 더 크게 */
 @media(min-width:768px){
-  .kana-full-wrap{flex-direction:row;gap:12px;padding:12px}
-  .gojuuon-wrap{flex:1}
-  .gk .ch{font-size:clamp(13px,1.6vw,22px)}
-  .gk .rm{font-size:clamp(7px,0.8vw,10px)}
-  .gojuuon-row{grid-template-columns:32px repeat(5,1fr);gap:3px}
-  .gojuuon-col-header{grid-template-columns:32px repeat(5,1fr);gap:3px}
-  .gojuuon-row-hd{font-size:10px}
-  .gojuuon-col-hd{font-size:10px}
+  .kana-full-wrap{gap:10px;padding:10px 12px}
+  .gk .ch{font-size:clamp(13px,1.5vw,22px)}
+  .gk .rm{font-size:clamp(7px,0.7vw,10px)}
+  .gojuuon-col-hd{font-size:9px}
+  .gojuuon-row-hd{font-size:9px}
 }
 
 /* ══════════════════════════════════════════════
@@ -1518,123 +1523,101 @@ function rebuildKana(){showKana(kanaModes.d,'d',null);showKana(kanaModes.m,'m',n
 function renderKanaFull(mode){
   const isHira = mode==='hira';
 
-  // 오십음도 데이터 정의 (행 헤더, [문자, 로마자] × 5열)
-  const COLS = ['ア단','イ단','ウ단','エ단','オ단'];
-
   const SEION = isHira ? [
-    ['あ행', ['あ','a'],['い','i'],['う','u'],['え','e'],['お','o']],
-    ['か행', ['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko']],
-    ['さ행', ['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so']],
-    ['た행', ['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to']],
-    ['な행', ['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no']],
-    ['は행', ['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho']],
-    ['ま행', ['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo']],
-    ['や행', ['や','ya'],['',''],['ゆ','yu'],['',''],['よ','yo']],
-    ['ら행', ['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro']],
-    ['わ행', ['わ','wa'],['',''],['',''],['',''],['を','wo']],
-    ['ん', ['ん','n'],['',''],['',''],['',''],['','']],
+    ['あ',['あ','a'],['い','i'],['う','u'],['え','e'],['お','o']],
+    ['か',['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko']],
+    ['さ',['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so']],
+    ['た',['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to']],
+    ['な',['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no']],
+    ['は',['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho']],
+    ['ま',['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo']],
+    ['や',['や','ya'],['',''],['ゆ','yu'],['',''],['よ','yo']],
+    ['ら',['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro']],
+    ['わ',['わ','wa'],['',''],['',''],['',''],['を','wo']],
+    ['ん',['ん','n'],['',''],['',''],['',''],['','']],
   ] : [
-    ['ア행', ['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o']],
-    ['カ행', ['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko']],
-    ['サ행', ['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so']],
-    ['タ행', ['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to']],
-    ['ナ행', ['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no']],
-    ['ハ행', ['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho']],
-    ['マ행', ['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo']],
-    ['ヤ행', ['ヤ','ya'],['',''],['ユ','yu'],['',''],['ヨ','yo']],
-    ['ラ행', ['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro']],
-    ['ワ행', ['ワ','wa'],['',''],['',''],['',''],['ヲ','wo']],
-    ['ン', ['ン','n'],['',''],['',''],['',''],['','']],
+    ['ア',['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o']],
+    ['カ',['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko']],
+    ['サ',['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so']],
+    ['タ',['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to']],
+    ['ナ',['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no']],
+    ['ハ',['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho']],
+    ['マ',['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo']],
+    ['ヤ',['ヤ','ya'],['',''],['ユ','yu'],['',''],['ヨ','yo']],
+    ['ラ',['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro']],
+    ['ワ',['ワ','wa'],['',''],['',''],['',''],['ヲ','wo']],
+    ['ン',['ン','n'],['',''],['',''],['',''],['','']],
   ];
 
   const DAKUTEN = isHira ? [
-    ['が행', ['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go']],
-    ['ざ행', ['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo']],
-    ['だ행', ['だ','da'],['',''],['',''],['で','de'],['ど','do']],
-    ['ば행', ['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo']],
-    ['ぱ행', ['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po']],
+    ['が',['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go']],
+    ['ざ',['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo']],
+    ['だ',['だ','da'],['',''],['',''],['で','de'],['ど','do']],
+    ['ば',['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo']],
+    ['ぱ',['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po']],
   ] : [
-    ['ガ행', ['ガ','ga'],['ギ','gi'],['グ','gu'],['ゲ','ge'],['ゴ','go']],
-    ['ザ행', ['ザ','za'],['ジ','ji'],['ズ','zu'],['ゼ','ze'],['ゾ','zo']],
-    ['ダ행', ['ダ','da'],['',''],['',''],['デ','de'],['ド','do']],
-    ['バ행', ['バ','ba'],['ビ','bi'],['ブ','bu'],['ベ','be'],['ボ','bo']],
-    ['パ행', ['パ','pa'],['ピ','pi'],['プ','pu'],['ペ','pe'],['ポ','po']],
+    ['ガ',['ガ','ga'],['ギ','gi'],['グ','gu'],['ゲ','ge'],['ゴ','go']],
+    ['ザ',['ザ','za'],['ジ','ji'],['ズ','zu'],['ゼ','ze'],['ゾ','zo']],
+    ['ダ',['ダ','da'],['',''],['',''],['デ','de'],['ド','do']],
+    ['バ',['バ','ba'],['ビ','bi'],['ブ','bu'],['ベ','be'],['ボ','bo']],
+    ['パ',['パ','pa'],['ピ','pi'],['プ','pu'],['ペ','pe'],['ポ','po']],
   ];
 
   const SMALL = isHira ? [
-    ['촉음', ['っ','(tt)'],['ゃ','ya'],['ゅ','yu'],['ょ','yo'],['','']],
-    ['소모음', ['ぁ','a'],['ぃ','i'],['ぅ','u'],['ぇ','e'],['ぉ','o']],
+    ['촉·요',['っ','tt'],['ゃ','ya'],['ゅ','yu'],['ょ','yo'],['','']],
+    ['소모음',['ぁ','a'],['ぃ','i'],['ぅ','u'],['ぇ','e'],['ぉ','o']],
   ] : [
-    ['촉음', ['ッ','(tt)'],['ャ','ya'],['ュ','yu'],['ョ','yo'],['','']],
-    ['소모음', ['ァ','a'],['ィ','i'],['ゥ','u'],['ェ','e'],['ォ','o']],
+    ['촉·요',['ッ','tt'],['ャ','ya'],['ュ','yu'],['ョ','yo'],['','']],
+    ['소모음',['ァ','a'],['ィ','i'],['ゥ','u'],['ェ','e'],['ォ','o']],
   ];
 
   const SPECIAL = isHira ? [] : [
-    ['외래음', ['ヴ','vu'],['ファ','fa'],['フィ','fi'],['フェ','fe'],['フォ','fo']],
-    ['', ['ティ','ti'],['ディ','di'],['チェ','che'],['シェ','she'],['ジェ','je']],
+    ['외래1',['ヴ','vu'],['ファ','fa'],['フィ','fi'],['フェ','fe'],['フォ','fo']],
+    ['외래2',['ティ','ti'],['ディ','di'],['チェ','che'],['シェ','she'],['ジェ','je']],
   ];
+
+  const COLS = ['ア','イ','ウ','エ','オ'];
+  const HDCOLS = 6; // row-hd + 5 cols
+  const gridCols = `grid-template-columns:22px repeat(5,1fr)`;
 
   function cell(pair, cls=''){
     if(!pair[0]) return `<div class="gk empty"></div>`;
     return `<div class="gk ${cls}"><span class="ch">${pair[0]}</span><span class="rm">${pair[1]}</span></div>`;
   }
   function colHeader(){
-    return `<div class="gojuuon-col-header">
+    return `<div class="gojuuon-col-hds" style="${gridCols}">
       <div class="gojuuon-col-hd"></div>
-      ${COLS.map(c=>`<div class="gojuuon-col-hd">${c}</div>`).join('')}
+      ${COLS.map(c=>`<div class="gojuuon-col-hd">${c}단</div>`).join('')}
     </div>`;
   }
-  function buildSection(rows, cls=''){
-    return rows.map(row=>`
-      <div class="gojuuon-row">
-        <div class="gojuuon-row-hd">${row[0]}</div>
-        ${row.slice(1).map(p=>cell(p,cls)).join('')}
+  function rows(arr, cls=''){
+    return arr.map(r=>`
+      <div class="gojuuon-row" style="${gridCols}">
+        <div class="gojuuon-row-hd">${r[0]}</div>
+        ${r.slice(1).map(p=>cell(p,cls)).join('')}
       </div>`).join('');
   }
 
-  // 모바일: 세로 단일, 데스크탑: 좌우 2패널
-  const isMobile = window.innerWidth < 768;
+  const rightRows = [...DAKUTEN,...SMALL,...SPECIAL];
 
-  let html = '';
-  if(isMobile){
-    html = `
-      <div class="gojuuon-wrap">
-        <div class="gojuuon-section">
-          <div class="gojuuon-section-label">청음 (清音)</div>
-          ${colHeader()}
-          ${buildSection(SEION)}
-        </div>
-        <div class="gojuuon-section" style="margin-top:4px">
-          <div class="gojuuon-section-label">탁음·반탁음 / 소문자${!isHira?' / 특수음':''}</div>
-          ${buildSection(DAKUTEN)}
-          ${buildSection(SMALL,'small-kana')}
-          ${buildSection(SPECIAL,'special')}
-        </div>
-      </div>`;
-  } else {
-    html = `
-      <div class="gojuuon-wrap">
-        <div class="gojuuon-section">
-          <div class="gojuuon-section-label">청음 (清音)</div>
-          ${colHeader()}
-          ${buildSection(SEION)}
-        </div>
+  $('kana-full-content').innerHTML = `
+    <!-- 왼쪽: 청음 -->
+    <div class="gojuuon-panel">
+      <div class="gojuuon-panel-label">청음 (清音)</div>
+      ${colHeader()}
+      <div class="gojuuon-rows">${rows(SEION)}</div>
+    </div>
+    <!-- 오른쪽: 탁음+소문자(+특수음) -->
+    <div class="gojuuon-panel">
+      <div class="gojuuon-panel-label">탁음·반탁음${!isHira?' · 소문자 · 외래음':' · 소문자'}</div>
+      ${colHeader()}
+      <div class="gojuuon-rows">${rows(DAKUTEN)}
+        <div class="gojuuon-sep"></div>
+        ${rows(SMALL,'small-kana')}
+        ${SPECIAL.length?'<div class="gojuuon-sep"></div>'+rows(SPECIAL,'special'):''}
       </div>
-      <div class="gojuuon-wrap">
-        <div class="gojuuon-section">
-          <div class="gojuuon-section-label">탁음 · 반탁음</div>
-          ${colHeader()}
-          ${buildSection(DAKUTEN)}
-        </div>
-        <div class="gojuuon-section" style="margin-top:6px">
-          <div class="gojuuon-section-label">소문자${!isHira?' · 특수음':''}</div>
-          ${buildSection(SMALL,'small-kana')}
-          ${buildSection(SPECIAL,'special')}
-        </div>
-      </div>`;
-  }
-
-  $('kana-full-content').innerHTML = html;
+    </div>
+  `;
 }
 function showKanaFull(mode,btn){
   document.querySelectorAll('#screen-kana .ktab').forEach(b=>b.classList.remove('on'));
