@@ -1078,7 +1078,7 @@ function saveRecord(w,know){
 ══════════════════════════════════════════════ */
 const ttsOK='speechSynthesis' in window;
 function speak(text){
-  if(!ttsOK||!isRevealed)return;
+  if(!ttsOK||!text)return;
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.lang='ja-JP';u.rate=0.9;speechSynthesis.speak(u);
@@ -1352,6 +1352,8 @@ function renderCard(){
     return;
   }
   const w=queue[idx];const s=lvStyle[w.lv];
+    const ttsClass=ttsOK?'tts-btn active':'tts-btn';
+  const ttsTitle=ttsOK?'':'title="미지원 브라우저"';
   const html=`
     <div class="lv-badge" style="background:${s.bg};color:${s.c}">${w.lv}</div>
     <div style="font-size:clamp(36px,8vw,56px);letter-spacing:4px;color:var(--text);text-align:center;line-height:1.2">${w.w}</div>
@@ -1359,7 +1361,7 @@ function renderCard(){
     <div class="meaning-el" style="font-size:clamp(14px,3vw,17px);color:var(--text2);margin-top:6px;text-align:center;display:none">${w.m}</div>
     <div class="type-el" style="font-size:12px;color:var(--text3);margin-top:3px;display:none">[${w.t}]</div>
     <div class="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px;opacity:.7">탭하면 정답 확인</div>
-    <button class="tts-btn" onclick="event.stopPropagation();speak(queue[idx]&&queue[idx].w)">🔊</button>`;
+    <button class="${ttsClass}" ${ttsTitle} onclick="event.stopPropagation();speak(queue[idx]&&queue[idx].w)">🔊</button>`;
   $('d-card').innerHTML=html;$('m-card').innerHTML=html;
   isRevealed=false;
 }
@@ -1372,7 +1374,6 @@ function reveal(){
     const card=document.getElementById(id);
     card.querySelectorAll('.reading-el,.meaning-el,.type-el').forEach(e=>e.style.display='block');
     const hint=card.querySelector('.card-hint');if(hint)hint.style.display='none';
-    const tts=card.querySelector('.tts-btn');if(tts&&ttsOK)tts.classList.add('active');
   });
   $('d-reveal').style.display='none';
   $('d-know').style.display='inline-block';
