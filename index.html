@@ -634,25 +634,73 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
 /* ══════════════════════════════════════════════
    KANA SCREEN
 ══════════════════════════════════════════════ */
-#screen-kana .kana-body{
-  flex:1;overflow-y:auto;padding:16px;
+/* ══════════════════════════════════════════════
+   KANA SCREEN — 오십음도 한눈에 보기
+══════════════════════════════════════════════ */
+#screen-kana{overflow:hidden}
+.kana-full-wrap{
+  flex:1;overflow:hidden;
+  padding:8px 10px max(8px,env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:6px;
 }
-#screen-kana .kana-body::-webkit-scrollbar{display:none}
-#screen-kana .kana-row{
+/* 오십음도 테이블 */
+.gojuuon-wrap{
+  flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden;
+}
+.gojuuon-section{
+  display:flex;flex-direction:column;gap:2px;
+}
+.gojuuon-section-label{
+  font-size:9px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.6px;padding-left:2px;
+}
+.gojuuon-row{
   display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:var(--kana-gap);
+  grid-template-columns: 28px repeat(5,1fr);
+  gap:2px;
 }
-#screen-kana .kc{
-  width:100%;height:auto;aspect-ratio:1/1;
+.gojuuon-row-hd{
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--text3);font-weight:700;
+  background:var(--bg3);border-radius:4px;
 }
-@media(min-width:600px){
-  #screen-kana .kana-row{
-    grid-template-columns:repeat(5,clamp(48px,8vw,72px));
-  }
-  #screen-kana .kc{
-    width:clamp(48px,8vw,72px);height:clamp(48px,8vw,72px);
-  }
+.gojuuon-col-header{
+  display:grid;
+  grid-template-columns: 28px repeat(5,1fr);
+  gap:2px;margin-bottom:1px;
+}
+.gojuuon-col-hd{
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--text3);font-weight:700;
+  padding:2px 0;
+}
+/* 셀 */
+.gk{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:5px;border:.5px solid var(--border);
+  background:var(--bg2);
+  aspect-ratio:1/1;
+  min-height:0;
+  transition:background .12s;
+}
+.gk .ch{font-size:clamp(11px,3.2vw,18px);color:var(--text);line-height:1.1;font-weight:500}
+.gk .rm{font-size:clamp(6px,1.6vw,9px);color:var(--text3);margin-top:1px}
+.gk.empty{border:none;background:transparent}
+.gk.small-kana{background:var(--purple-l)}
+.gk.small-kana .ch{color:var(--purple);font-size:clamp(10px,2.8vw,16px)}
+.gk.special{background:var(--n3-bg)}
+.gk.special .ch{color:var(--n3-c)}
+
+/* 데스크탑: 2단 병렬 레이아웃 */
+@media(min-width:768px){
+  .kana-full-wrap{flex-direction:row;gap:12px;padding:12px}
+  .gojuuon-wrap{flex:1}
+  .gk .ch{font-size:clamp(13px,1.6vw,22px)}
+  .gk .rm{font-size:clamp(7px,0.8vw,10px)}
+  .gojuuon-row{grid-template-columns:32px repeat(5,1fr);gap:3px}
+  .gojuuon-col-header{grid-template-columns:32px repeat(5,1fr);gap:3px}
+  .gojuuon-row-hd{font-size:10px}
+  .gojuuon-col-hd{font-size:10px}
 }
 
 /* ══════════════════════════════════════════════
@@ -1069,7 +1117,6 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
       <div class="exam-q-lv" id="exam-q-lv"></div>
       <div class="exam-q-word" id="exam-q-word"></div>
       <div class="exam-q-sub" id="exam-q-sub"></div>
-      <button class="exam-tts-btn" onclick="speak($('exam-q-word').textContent)">🔊</button>
     </div>
     <div class="exam-choices" id="exam-choices"></div>
     <button class="exam-next-btn" id="exam-next-btn" onclick="examNext()">다음 →</button>
@@ -1108,11 +1155,11 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
     <button class="topbar-back" onclick="showScreen('home')">←</button>
     <span class="topbar-title">あ 가나표</span>
   </div>
-  <div class="ktab-row" style="padding:10px 16px 0;flex-shrink:0">
+  <div class="ktab-row" style="padding:6px 10px 0;flex-shrink:0">
     <button class="ktab on" onclick="showKanaFull('hira',this)">ひらがな</button>
     <button class="ktab" onclick="showKanaFull('kata',this)">カタカナ</button>
   </div>
-  <div class="kana-body" id="kana-full-content"></div>
+  <div class="kana-full-wrap" id="kana-full-content"></div>
 </div>
 
 <!-- ══════════════════════════════
@@ -1222,6 +1269,8 @@ const HIRA=[
   {t:"",c:[["ぞ","zo"],["だ","da"],["で","de"],["ど","do"],["ば","ba"]]},
   {t:"",c:[["び","bi"],["ぶ","bu"],["べ","be"],["ぼ","bo"],["",""]]},
   {t:"반탁음",c:[["ぱ","pa"],["ぴ","pi"],["ぷ","pu"],["ぺ","pe"],["ぽ","po"]]},
+  {t:"소문자(촉음·요음)",c:[["っ","(tt)"],["ゃ","(ya)"],["ゅ","(yu)"],["ょ","(yo)"],["",""]]},
+  {t:"",c:[["ぁ","(a)"],["ぃ","(i)"],["ぅ","(u)"],["ぇ","(e)"],["ぉ","(o)"]]},
 ];
 const KATA=[
   {t:"기본 모음",c:[["ア","a"],["イ","i"],["ウ","u"],["エ","e"],["オ","o"]]},
@@ -1238,6 +1287,11 @@ const KATA=[
   {t:"",c:[["ゾ","zo"],["ダ","da"],["デ","de"],["ド","do"],["バ","ba"]]},
   {t:"",c:[["ビ","bi"],["ブ","bu"],["ベ","be"],["ボ","bo"],["",""]]},
   {t:"반탁음",c:[["パ","pa"],["ピ","pi"],["プ","pu"],["ペ","pe"],["ポ","po"]]},
+  {t:"소문자(촉음·요음)",c:[["ッ","(tt)"],["ャ","(ya)"],["ュ","(yu)"],["ョ","(yo)"],["",""]]},
+  {t:"",c:[["ァ","(a)"],["ィ","(i)"],["ゥ","(u)"],["ェ","(e)"],["ォ","(o)"]]},
+  {t:"외래어 특수음",c:[["ヴ","vu"],["ファ","fa"],["フィ","fi"],["フェ","fe"],["フォ","fo"]]},
+  {t:"",c:[["ティ","ti"],["ディ","di"],["トゥ","tu"],["ドゥ","du"],["ウィ","wi"]]},
+  {t:"",c:[["ウェ","we"],["ウォ","wo"],["チェ","che"],["シェ","she"],["ジェ","je"]]},
 ];
 
 /* ══════════════════════════════════════════════
@@ -1462,8 +1516,125 @@ function showKana(mode,side,btn){
 }
 function rebuildKana(){showKana(kanaModes.d,'d',null);showKana(kanaModes.m,'m',null);}
 function renderKanaFull(mode){
-  const rows=mode==='hira'?HIRA:KATA;
-  document.getElementById('kana-full-content').innerHTML=buildKana(rows,new Set());
+  const isHira = mode==='hira';
+
+  // 오십음도 데이터 정의 (행 헤더, [문자, 로마자] × 5열)
+  const COLS = ['ア단','イ단','ウ단','エ단','オ단'];
+
+  const SEION = isHira ? [
+    ['あ행', ['あ','a'],['い','i'],['う','u'],['え','e'],['お','o']],
+    ['か행', ['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko']],
+    ['さ행', ['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so']],
+    ['た행', ['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to']],
+    ['な행', ['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no']],
+    ['は행', ['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho']],
+    ['ま행', ['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo']],
+    ['や행', ['や','ya'],['',''],['ゆ','yu'],['',''],['よ','yo']],
+    ['ら행', ['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro']],
+    ['わ행', ['わ','wa'],['',''],['',''],['',''],['を','wo']],
+    ['ん', ['ん','n'],['',''],['',''],['',''],['','']],
+  ] : [
+    ['ア행', ['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o']],
+    ['カ행', ['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko']],
+    ['サ행', ['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so']],
+    ['タ행', ['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to']],
+    ['ナ행', ['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no']],
+    ['ハ행', ['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho']],
+    ['マ행', ['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo']],
+    ['ヤ행', ['ヤ','ya'],['',''],['ユ','yu'],['',''],['ヨ','yo']],
+    ['ラ행', ['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro']],
+    ['ワ행', ['ワ','wa'],['',''],['',''],['',''],['ヲ','wo']],
+    ['ン', ['ン','n'],['',''],['',''],['',''],['','']],
+  ];
+
+  const DAKUTEN = isHira ? [
+    ['が행', ['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go']],
+    ['ざ행', ['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo']],
+    ['だ행', ['だ','da'],['',''],['',''],['で','de'],['ど','do']],
+    ['ば행', ['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo']],
+    ['ぱ행', ['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po']],
+  ] : [
+    ['ガ행', ['ガ','ga'],['ギ','gi'],['グ','gu'],['ゲ','ge'],['ゴ','go']],
+    ['ザ행', ['ザ','za'],['ジ','ji'],['ズ','zu'],['ゼ','ze'],['ゾ','zo']],
+    ['ダ행', ['ダ','da'],['',''],['',''],['デ','de'],['ド','do']],
+    ['バ행', ['バ','ba'],['ビ','bi'],['ブ','bu'],['ベ','be'],['ボ','bo']],
+    ['パ행', ['パ','pa'],['ピ','pi'],['プ','pu'],['ペ','pe'],['ポ','po']],
+  ];
+
+  const SMALL = isHira ? [
+    ['촉음', ['っ','(tt)'],['ゃ','ya'],['ゅ','yu'],['ょ','yo'],['','']],
+    ['소모음', ['ぁ','a'],['ぃ','i'],['ぅ','u'],['ぇ','e'],['ぉ','o']],
+  ] : [
+    ['촉음', ['ッ','(tt)'],['ャ','ya'],['ュ','yu'],['ョ','yo'],['','']],
+    ['소모음', ['ァ','a'],['ィ','i'],['ゥ','u'],['ェ','e'],['ォ','o']],
+  ];
+
+  const SPECIAL = isHira ? [] : [
+    ['외래음', ['ヴ','vu'],['ファ','fa'],['フィ','fi'],['フェ','fe'],['フォ','fo']],
+    ['', ['ティ','ti'],['ディ','di'],['チェ','che'],['シェ','she'],['ジェ','je']],
+  ];
+
+  function cell(pair, cls=''){
+    if(!pair[0]) return `<div class="gk empty"></div>`;
+    return `<div class="gk ${cls}"><span class="ch">${pair[0]}</span><span class="rm">${pair[1]}</span></div>`;
+  }
+  function colHeader(){
+    return `<div class="gojuuon-col-header">
+      <div class="gojuuon-col-hd"></div>
+      ${COLS.map(c=>`<div class="gojuuon-col-hd">${c}</div>`).join('')}
+    </div>`;
+  }
+  function buildSection(rows, cls=''){
+    return rows.map(row=>`
+      <div class="gojuuon-row">
+        <div class="gojuuon-row-hd">${row[0]}</div>
+        ${row.slice(1).map(p=>cell(p,cls)).join('')}
+      </div>`).join('');
+  }
+
+  // 모바일: 세로 단일, 데스크탑: 좌우 2패널
+  const isMobile = window.innerWidth < 768;
+
+  let html = '';
+  if(isMobile){
+    html = `
+      <div class="gojuuon-wrap">
+        <div class="gojuuon-section">
+          <div class="gojuuon-section-label">청음 (清音)</div>
+          ${colHeader()}
+          ${buildSection(SEION)}
+        </div>
+        <div class="gojuuon-section" style="margin-top:4px">
+          <div class="gojuuon-section-label">탁음·반탁음 / 소문자${!isHira?' / 특수음':''}</div>
+          ${buildSection(DAKUTEN)}
+          ${buildSection(SMALL,'small-kana')}
+          ${buildSection(SPECIAL,'special')}
+        </div>
+      </div>`;
+  } else {
+    html = `
+      <div class="gojuuon-wrap">
+        <div class="gojuuon-section">
+          <div class="gojuuon-section-label">청음 (清音)</div>
+          ${colHeader()}
+          ${buildSection(SEION)}
+        </div>
+      </div>
+      <div class="gojuuon-wrap">
+        <div class="gojuuon-section">
+          <div class="gojuuon-section-label">탁음 · 반탁음</div>
+          ${colHeader()}
+          ${buildSection(DAKUTEN)}
+        </div>
+        <div class="gojuuon-section" style="margin-top:6px">
+          <div class="gojuuon-section-label">소문자${!isHira?' · 특수음':''}</div>
+          ${buildSection(SMALL,'small-kana')}
+          ${buildSection(SPECIAL,'special')}
+        </div>
+      </div>`;
+  }
+
+  $('kana-full-content').innerHTML = html;
 }
 function showKanaFull(mode,btn){
   document.querySelectorAll('#screen-kana .ktab').forEach(b=>b.classList.remove('on'));
@@ -1798,7 +1969,6 @@ function renderExamQuestion(){
   $('exam-q-word').textContent=qWord;
   $('exam-q-sub').textContent=qtype==='meaning'?qSub:'';
   $('exam-choices').innerHTML=choices.map(ch=>`<div class="exam-choice" onclick="examAnswer(this,'${ch.replace(/'/g,"\\'")}','${correctKey.replace(/'/g,"\\'")}','${w.w.replace(/'/g,"\\'")}')">${ch}</div>`).join('');
-  speak(w.w);
 }
 function examAnswer(el,chosen,correct,word){
   if(examAnswered)return;
@@ -1809,7 +1979,6 @@ function examAnswer(el,chosen,correct,word){
   if(!ok)document.querySelectorAll('.exam-choice').forEach(c=>{if(c.textContent.trim()===correct)c.classList.add('reveal');});
   examCorrectArr.push(ok);
   $('exam-next-btn').style.display='block';
-  speak(word);
 }
 function examNext(){examIdx++;renderExamQuestion();}
 function showExamResult(){
