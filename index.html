@@ -1060,7 +1060,7 @@ html[data-theme="dark"] .review-exit{border-color:#f0c040;color:#f0c040}
         <div class="quiz-q-word" id="quiz-q-word"></div>
         <div class="quiz-q-reading" id="quiz-q-reading"></div>
         <div class="quiz-q-hint" id="quiz-q-hint">이 단어의 뜻은?</div>
-        <button class="quiz-tts-btn" onclick="speak($('quiz-q-word').textContent)">🔊</button>
+        <button class="quiz-tts-btn" onclick="speak(quizCurrent&&quizCurrent.r)">🔊</button>
       </div>
       <div class="quiz-choices" id="quiz-choices"></div>
       <button class="quiz-next-btn" id="quiz-next-btn" onclick="quizNext()">다음 문제 →</button>
@@ -1728,7 +1728,7 @@ function renderCard(){
     <div class="meaning-el" style="font-size:clamp(14px,3vw,17px);color:var(--text2);margin-top:6px;text-align:center;display:none">${w.m}</div>
     <div class="type-el" style="font-size:12px;color:var(--text3);margin-top:3px;display:none">[${w.t}]</div>
     <div class="card-hint" style="font-size:12px;color:var(--text3);position:absolute;bottom:12px;opacity:.7">탭하면 정답 확인</div>
-    <button class="${ttsClass}" ${ttsTitle} onclick="event.stopPropagation();speak(queue[idx]&&queue[idx].w)">🔊</button>`;
+    <button class="${ttsClass}" ${ttsTitle} onclick="event.stopPropagation();speak(queue[idx]&&queue[idx].r)">🔊</button>`;
   $('d-card').innerHTML=html;$('m-card').innerHTML=html;
   isRevealed=false;
 }
@@ -1870,7 +1870,7 @@ function quizAnswer(el,chosen,correct,reading,word){
   $('quiz-wrong').textContent=quizWrong;
   $('quiz-streak').textContent=quizStreak+'🔥';
   $('quiz-next-btn').style.display='block';
-  speak(word);
+  speak(reading); // 히라가나 읽기로 발음
 }
 function quizNext(){renderQuizQuestion();}
 
