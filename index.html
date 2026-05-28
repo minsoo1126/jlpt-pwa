@@ -1269,6 +1269,7 @@ const LS={
 ══════════════════════════════════════════════ */
 let activeLv=new Set([]);
 let queue=[],idx=0,isRevealed=false,kn=0,dn=0;
+let markedInSession=new Map(); // idx → true/false, 세션 내 중복 마크 방지
 let kanaModes={d:'hira',m:'hira'};
 let currentHighlights=new Set();
 let reviewMode=false;
@@ -1517,11 +1518,11 @@ function enterReviewMode(){
   if(pool.length===0){alert('복습할 단어가 없습니다.\n먼저 ✗ 몰라요를 체크해주세요!');return;}
   reviewMode=true;
   queue=pool.sort(()=>Math.random()-.5);
-  idx=0;kn=0;dn=0;
+  idx=0;kn=0;dn=0;markedInSession=new Map();
   ['d','m'].forEach(s=>{const el=$(`${s}-review-txt`);if(el)el.textContent=`📝 오답 복습 (${pool.length}개)`;});
   updateReviewBanner();updateStats();renderCard();
 }
-function exitReviewMode(){reviewMode=false;updateReviewBanner();doShuffle();}
+function exitReviewMode(){reviewMode=false;markedInSession=new Map();updateReviewBanner();doShuffle();}
 
 /* ══════════════════════════════════════════════
    CARD RENDER
@@ -1603,14 +1604,27 @@ function go(d){
 }
 function mark(know){
   if(!isRevealed)return;
-  saveRecord(queue[idx],know);
+  const w=queue[idx];
+  const key=wordKey(w);
+
+  // 이미 이 세션에서 마크한 단어면 카운트 변경만 (중복 방지)
+  if(markedInSession.has(idx)){
+    const prev=markedInSession.get(idx);
+    if(prev===know){go(1);return;} // 같은 답이면 그냥 넘김
+    // 다른 답으로 바꾸는 경우 카운트 수정
+    if(prev===true){kn=Math.max(0,kn-1);}
+    else{dn=Math.max(0,dn-1);}
+  }
+
+  markedInSession.set(idx,know);
+  saveRecord(w,know);
   if(know)kn++;else dn++;
   go(1);
 }
 function doShuffle(){
   if(searchQuery){handleSearch(searchQuery,'d');return;}
   queue=vocab.filter(v=>activeLv.has(v.lv)).sort(()=>Math.random()-.5);
-  idx=0;kn=0;dn=0;updateStats();renderCard();
+  idx=0;kn=0;dn=0;markedInSession=new Map();updateStats();renderCard();
 }
 function toggleLv(lv,btn){
   if(activeLv.has(lv)){if(activeLv.size>1)activeLv.delete(lv);}
