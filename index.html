@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+cd /workspaces/jlpt-pwa<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -299,12 +299,12 @@
     </div>
     <div id="d-topbar">
       <span class="lv-label">레벨</span>
-      <button class="lv-btn n1 on" onclick="toggleLv('N1',this)">N1</button>
-      <button class="lv-btn n2 on" onclick="toggleLv('N2',this)">N2</button>
-      <button class="lv-btn n3 on" onclick="toggleLv('N3',this)">N3</button>
-      <button class="lv-btn n4 on" onclick="toggleLv('N4',this)">N4</button>
-      <button class="lv-btn n5 on" onclick="toggleLv('N5',this)">N5</button>
-      <button class="lv-btn kw on" onclick="toggleLv('회화',this)">회화</button>
+      <button class="lv-btn n1" onclick="toggleLv('N1',this)">N1</button>
+      <button class="lv-btn n2" onclick="toggleLv('N2',this)">N2</button>
+      <button class="lv-btn n3" onclick="toggleLv('N3',this)">N3</button>
+      <button class="lv-btn n4" onclick="toggleLv('N4',this)">N4</button>
+      <button class="lv-btn n5" onclick="toggleLv('N5',this)">N5</button>
+      <button class="lv-btn kw" onclick="toggleLv('회화',this)">회화</button>
       <button class="shuffle-btn" id="d-shuffle" onclick="doShuffle()" style="margin-left:auto;padding:6px 10px;font-size:12px">셔플 ↺</button>
       <button class="shuffle-btn" onclick="enterReviewMode()" style="padding:6px 10px;font-size:12px;border-color:var(--coral-b);color:var(--coral-c)">오답복습</button>
     </div>
@@ -346,12 +346,12 @@
     <button class="review-exit" onclick="exitReviewMode()">✕ 복습 종료</button>
   </div>
   <div id="m-topbar" style="gap:4px">
-    <button class="lv-btn n1 on" onclick="toggleLv('N1',this)" style="padding:5px 8px;font-size:11px">N1</button>
-    <button class="lv-btn n2 on" onclick="toggleLv('N2',this)" style="padding:5px 8px;font-size:11px">N2</button>
-    <button class="lv-btn n3 on" onclick="toggleLv('N3',this)" style="padding:5px 8px;font-size:11px">N3</button>
-    <button class="lv-btn n4 on" onclick="toggleLv('N4',this)" style="padding:5px 8px;font-size:11px">N4</button>
-    <button class="lv-btn n5 on" onclick="toggleLv('N5',this)" style="padding:5px 8px;font-size:11px">N5</button>
-    <button class="lv-btn kw on" onclick="toggleLv('회화',this)" style="padding:5px 8px;font-size:11px">회화</button>
+    <button class="lv-btn n1" onclick="toggleLv('N1',this)" style="padding:5px 8px;font-size:11px">N1</button>
+    <button class="lv-btn n2" onclick="toggleLv('N2',this)" style="padding:5px 8px;font-size:11px">N2</button>
+    <button class="lv-btn n3" onclick="toggleLv('N3',this)" style="padding:5px 8px;font-size:11px">N3</button>
+    <button class="lv-btn n4" onclick="toggleLv('N4',this)" style="padding:5px 8px;font-size:11px">N4</button>
+    <button class="lv-btn n5" onclick="toggleLv('N5',this)" style="padding:5px 8px;font-size:11px">N5</button>
+    <button class="lv-btn kw" onclick="toggleLv('회화',this)" style="padding:5px 8px;font-size:11px">회화</button>
     <button class="shuffle-btn" onclick="doShuffle()" style="margin-left:auto;padding:6px 10px;font-size:12px;min-height:32px">↺</button>
     <button class="shuffle-btn" onclick="enterReviewMode()" style="padding:6px 8px;font-size:11px;min-height:32px;border-color:var(--coral-b);color:var(--coral-c)">오답복습</button>
   </div>
@@ -457,7 +457,7 @@ const LS={
 };
 
 // ════ State ════
-let activeLv=new Set(['N1','N2','N3','N4','N5','회화']);
+let activeLv=new Set([]);  // 시작: 모든 레벨 비활성화
 let queue=[],idx=0,isRevealed=false,kn=0,dn=0;
 let kanaModes={d:'hira',m:'hira'};
 let currentHighlights=new Set();
@@ -612,6 +612,19 @@ function renderCard(){
   $('d-dont').style.display='none';
   $('d-reveal').style.display='inline-block';
 
+  // 레벨이 선택되지 않으면 안내 메시지
+  if(activeLv.size===0){
+    const msg=`<div style="text-align:center;padding:40px 20px">
+      <div style="font-size:32px;color:var(--text);margin-bottom:12px">📚</div>
+      <div style="font-size:20px;color:var(--text);margin-bottom:12px;font-weight:600">레벨을 선택해주세요</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:20px">상단에서 학습할 레벨을 하나 이상 선택하면<br/>단어가 나타납니다.</div>
+      <div style="font-size:12px;color:var(--text3)">N1 · N2 · N3 · N4 · N5 · 회화</div>
+    </div>`;
+    $('d-card').innerHTML=msg;$('m-card').innerHTML=msg;
+    $('d-reveal').style.display='none';$('m-reveal').style.display='none';
+    return;
+  }
+
   if(idx>=total){
     const emptyMsg=queue.length===0&&searchQuery?'검색 결과가 없습니다':reviewMode?'복습 완료! 🎉':'완료! 🎉';
     const btnLabel=reviewMode?'복습 종료':'다시 시작';
@@ -691,7 +704,7 @@ function toggleLv(lv,btn){
 
 // ════ Init ════
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-showKana('hira','d',null);showKana('hira','m',null);doShuffle();
+showKana('hira','d',null);showKana('hira','m',null);renderCard();
 </script>
 </body>
 </html>
